@@ -18,12 +18,6 @@
                 <a href="#" class="navbar-brand"><img src="img/banner_horizontal.png" alt="Banner"></a>
             </div>
             <div class="collapse navbar-collapse" id="navigation">
-                <form class="navbar-form navbar-right">
-                    <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Search">
-                    </div>
-                    <button type="submit" class="btn btn-default">Submit</button>
-                </form>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="#" class="active">Home</a></li>
                     <li><a href="#">About</a></li>
