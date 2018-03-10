@@ -21,26 +21,70 @@ $page_title = "Scheduler";
 
     <main>
         <div class="container">
-            <div class="row">
-                <div class="col-xs-6">
-                    <p class="well well-lg text-center">Option Top-Left</p>
-                </div>
-                <div class="col-xs-6">
-                    <p class="well well-lg text-center">Option Top-Right</p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-6">
-                    <p class="well well-lg text-center">Option Bottom-Left</p>
-                </div>
-                <div class="col-xs-6">
-                    <p class="well well-lg text-center">Option Bottom-Right</p>
+            <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h5 class="panel-title"><a href="#room-select-panel" data-toggle="collapse">Room Selection</a></h5>
+                    </div>
+                    <div class="panel-collapse collapse" id="room-select-panel">
+                        <div class="panel-body">
+                            <form action="" method="get">
+                                <div class="form-group">
+                                    <label for="campusInput">Campus</label>
+                                    <select class="form-control selectpicker" id="campusInput" title="Choose a campus...">
+                                        <option value="Q">Queens</option>
+                                        <option value="S">Staten Island</option>
+                                    </select>
+
+                                    <label for="buildingInput">Building</label>
+                                    <select class="form-control selectpicker" id="buildingInput" title="Choose a building...">
+
+                                    </select>
+
+                                    <label for="roomInput">Room</label>
+                                    <select class="form-control selectpicker" id="roomInput" title="Choose a room...">
+
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="panel-heading">
+                        <h5 class="panel-title"><a href="#professor-select-panel" data-toggle="collapse">Room Selection</a></h5>
+                    </div>
+                    <div class="panel-collapse collapse" id="professor-select-panel">
+                        <div class="panel-body">
+                            <form action="" method="get">
+                                <div class="form-group">
+                                    <label for="professorInput">Building</label>
+
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
 <?php include ROOT_DIR . 'php/template/footer_template.php'; ?>
+
+    <script type="text/javascript">
+        $("#campusInput").on('change', function() {
+            $(".selectpicker").selectpicker();
+            $("#buildingInput").load("php/functions.php?ftype=bldg&campus=" + $("#campusInput").val());
+            $(".selectpicker").selectpicker('render');
+            $(".selectpicker").selectpicker('refresh');
+        }).trigger("change");
+
+        $("#buildingInput").on('change', function() {
+            $(".selectpicker").selectpicker();
+            $("#roomInput").load("php/functions.php?ftype=room&building=" + $("#buildingInput").val());
+            $(".selectpicker").selectpicker('render');
+            $(".selectpicker").selectpicker('refresh');
+        }).trigger("change");
+    </script>
 
 </body>
 

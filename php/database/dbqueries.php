@@ -48,10 +48,16 @@ class DBQueries {
             . "FOREIGN KEY (instr_xid) REFERENCES instructors(instr_xid));"
     );
 
-    public static $SELECT_ROOM = "SELECT * FROM `events` WHERE camp=? AND bldg=? AND room=?";
+    public static $SELECT_CAMPUSES = "SELECT DISTINCT camp_code, camp_name FROM rooms WHERE true;";
 
-    public static $SELECT_COURSE = "SELECT * FROM `events` WHERE subj=? AND crse=?";
+    public static $SELECT_BUILDINGS = "SELECT DISTINCT bldg_code, bldg_name FROM rooms WHERE camp_code=?;";
 
-    public static $SELECT_INSTRUCTORS = "SELECT * FROM `events` WHERE xid=?";
+    public static $SELECT_ROOMS = "SELECT DISTINCT room_code, room_name FROM rooms WHERE bldg_code=?;";
+
+    public static $SELECT_ROOM = "SELECT * FROM `events` WHERE camp_code=? AND bldg_code=? AND room_code=?;";
+
+    public static $SELECT_COURSE = "SELECT * FROM `events` WHERE subj_code=? AND crse_code=?;";
+
+    public static $SELECT_INSTRUCTORS = "SELECT * FROM `events` WHERE instr_xid=?;";
 
 }

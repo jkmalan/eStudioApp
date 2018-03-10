@@ -17,12 +17,22 @@ class DBHandler {
      * @param $file
      */
     public static function import($file) {
+        $db = Database::getDatabase();
+        foreach (DBQueries::$CREATE_TABLES as $query) {
+            $createTable = $db->exec($query);
+            if ($createTable) {
+                echo "Table created!";
+            }
+        }
+
+        /* Temporarily disable file read in
         if (($data = fopen($file, "r")) !== FALSE) {
             $header = fgetcsv($data, 0, ",");
             while (($row = fgetcsv($data, 0, ",")) !== FALSE) {
                 self::insertEvent(self::bindHeader($header, $row));
             }
         }
+        */
     }
 
     /*
@@ -49,6 +59,48 @@ class DBHandler {
 
     }
 
+    public static function selectCampuses() {
+        $db = Database::getDatabase();
+        $results = NULL;
+        try {
+            $results = $db->query(DBQueries::$SELECT_CAMPUSES);
+        } catch (PDOException $ex) {
+            exit("Failed to query data: " . $ex->getMessage());
+        }
+
+        return $results;
+    }
+
+    public static function selectBuildings($camp) {
+        $db = Database::getDatabase();
+        $results = NULL;
+        try {
+            $stmt = $db->prepare(DBQueries::$SELECT_BUILDINGS);
+            $stmt->bindParam(1,$camp);
+            $stmt->execute();
+            $results = $stmt->fetchAll();
+        } catch (PDOException $ex) {
+            exit("Failed to query data: " . $ex->getMessage());
+        }
+
+        return $results;
+    }
+
+    public static function selectRooms($bldg) {
+        $db = Database::getDatabase();
+        $results = NULL;
+        try {
+            $stmt = $db->prepare(DBQueries::$SELECT_ROOMS);
+            $stmt->bindParam(1,$bldg);
+            $stmt->execute();
+            $results = $stmt->fetchAll();
+        } catch (PDOException $ex) {
+            exit("Failed to query data: " . $ex->getMessage());
+        }
+
+        return $results;
+    }
+
     /**
      * Retrieves data using a specified room
      *
@@ -63,7 +115,8 @@ class DBHandler {
             $stmt->bindParam(1, $campus);
             $stmt->bindParam(2, $building);
             $stmt->bindParam(3, $room);
-            $results = $stmt->execute();
+            $stmt->execute();
+            $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
             exit("Failed to insert or update row: " . $ex->getMessage());
         }
@@ -81,7 +134,8 @@ class DBHandler {
             $stmt = $db->prepare(DBQueries::$SELECT_COURSE);
             $stmt->bindParam(1, $subject);
             $stmt->bindParam(2, $course);
-            $results = $stmt->execute();
+            $stmt->execute();
+            $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
             exit("Failed to insert or update row: " . $ex->getMessage());
         }
@@ -97,7 +151,8 @@ class DBHandler {
         try {
             $stmt = $db->prepare(DBQueries::$SELECT_ROOM);
             $stmt->bindParam(1, $xid);
-            $results = $stmt->execute();
+            $stmt->execute();
+            $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
             exit("Failed to insert or update row: " . $ex->getMessage());
         }

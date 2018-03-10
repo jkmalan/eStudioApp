@@ -11,3 +11,12 @@ define("ROOT_DIR", filter_input(INPUT_SERVER, 'DOCUMENT_ROOT') . "/");
 
 /* The base url of the site */
 define("BASE_URL", 'http://127.0.0.1/');
+
+require_once 'settings/config.php';
+require_once 'database/dbqueries.php';
+require_once 'database/database.php';
+require_once 'database/dbhandler.php';
+
+Database::connect();
+DBHandler::import(null);
+
