@@ -101,6 +101,18 @@ class DBHandler {
         return $results;
     }
 
+    public static function selectProfessors() {
+        $db = Database::getDatabase();
+        $results = NULL;
+        try {
+            $results = $db->query(DBQueries::$SELECT_INSTRUCTORS);
+        } catch (PDOException $ex) {
+            exit("Failed to query data: " . $ex->getMessage());
+        }
+
+        return $results;
+    }
+
     /**
      * Retrieves data using a specified room
      *

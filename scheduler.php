@@ -28,37 +28,42 @@ $page_title = "Scheduler";
                     </div>
                     <div class="panel-collapse collapse" id="room-select-panel">
                         <div class="panel-body">
-                            <form action="" method="get">
+                            <form class="form-inline" action="calendar.php" method="get">
                                 <div class="form-group">
-                                    <label for="campusInput">Campus</label>
-                                    <select class="form-control selectpicker" id="campusInput" title="Choose a campus...">
-                                        <option value="Q">Queens</option>
-                                        <option value="S">Staten Island</option>
-                                    </select>
-
-                                    <label for="buildingInput">Building</label>
-                                    <select class="form-control selectpicker" id="buildingInput" title="Choose a building...">
+                                    <label class="sr-only" for="campusInput">Campus</label>
+                                    <select class="form-control mb-2" id="campusInput" title="Choose a campus...">
 
                                     </select>
 
-                                    <label for="roomInput">Room</label>
-                                    <select class="form-control selectpicker" id="roomInput" title="Choose a room...">
+                                    <label class="sr-only" for="buildingInput">Building</label>
+                                    <select class="form-control mb-2" id="buildingInput" title="Choose a building...">
 
                                     </select>
+
+                                    <label class="sr-only" for="roomInput">Room</label>
+                                    <select class="form-control mb-2" id="roomInput" title="Choose a room...">
+
+                                    </select>
+
+                                    <button class="btn btn-primary mb-2" type="submit">Search</button>
                                 </div>
                             </form>
                         </div>
                     </div>
 
                     <div class="panel-heading">
-                        <h5 class="panel-title"><a href="#professor-select-panel" data-toggle="collapse">Room Selection</a></h5>
+                        <h5 class="panel-title"><a href="#professor-select-panel" data-toggle="collapse">Professor Selection</a></h5>
                     </div>
                     <div class="panel-collapse collapse" id="professor-select-panel">
                         <div class="panel-body">
-                            <form action="" method="get">
+                            <form class="form-inline" action="calendar.php" method="get">
                                 <div class="form-group">
-                                    <label for="professorInput">Building</label>
+                                    <label class="sr-only" for="professorInput">Professor</label>
+                                    <select class="form-control mb-4" id="professorInput" title="Choose a professor...">
 
+                                    </select>
+
+                                    <button class="btn btn-primary mb-2" type="submit">Search</button>
                                 </div>
                             </form>
                         </div>
@@ -71,19 +76,26 @@ $page_title = "Scheduler";
 <?php include ROOT_DIR . 'php/template/footer_template.php'; ?>
 
     <script type="text/javascript">
-        $("#campusInput").on('change', function() {
-            $(".selectpicker").selectpicker();
-            $("#buildingInput").load("php/functions.php?ftype=bldg&campus=" + $("#campusInput").val());
-            $(".selectpicker").selectpicker('render');
-            $(".selectpicker").selectpicker('refresh');
-        }).trigger("change");
+        $(function() {
+            var $campusInput = $("#campusInput");
+            var $buildingInput = $("#buildingInput");
+            var $roomInput = $("#roomInput");
+            var $professorInput = $("#professorInput");
 
-        $("#buildingInput").on('change', function() {
-            $(".selectpicker").selectpicker();
-            $("#roomInput").load("php/functions.php?ftype=room&building=" + $("#buildingInput").val());
-            $(".selectpicker").selectpicker('render');
-            $(".selectpicker").selectpicker('refresh');
-        }).trigger("change");
+            $(function() {
+                $campusInput.load("php/functions.php?ftype=camp");
+                $professorInput.load("php/functions.php?ftype=prof");
+            });
+
+            $campusInput.on('change', function () {
+                $buildingInput.load("php/functions.php?ftype=bldg&campus=" + $campusInput.val());
+                $roomInput.load("php/functions.php?ftype=room&building=" + $buildingInput.val());
+            }).trigger("change");
+
+            $buildingInput.on('change', function () {
+                $roomInput.load("php/functions.php?ftype=room&building=" + $buildingInput.val());
+            }).trigger("change");
+        });
     </script>
 
 </body>

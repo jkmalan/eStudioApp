@@ -54,10 +54,10 @@ class DBQueries {
 
     public static $SELECT_ROOMS = "SELECT DISTINCT room_code, room_name FROM rooms WHERE bldg_code=?;";
 
+    public static $SELECT_INSTRUCTORS = "SELECT DISTINCT instr_xid, instr_fname, instr_lname FROM `instructors` WHERE true;";
+
     public static $SELECT_ROOM = "SELECT * FROM `events` WHERE camp_code=? AND bldg_code=? AND room_code=?;";
 
     public static $SELECT_COURSE = "SELECT * FROM `events` WHERE subj_code=? AND crse_code=?;";
-
-    public static $SELECT_INSTRUCTORS = "SELECT * FROM `events` WHERE instr_xid=?;";
 
 }
