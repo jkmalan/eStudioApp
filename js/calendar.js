@@ -5,10 +5,3 @@
  * All other rights reserved.
  */
 
-(function($) {
-    "use strict";
-
-    var options = {
-
-    };
-}(jQuery));
