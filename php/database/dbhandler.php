@@ -114,14 +114,16 @@ class DBHandler {
     }
 
     /**
-     * Retrieves data using a specified room
+     * Retrieves events data using a specified room
      *
      * @param $campus
      * @param $building
      * @param $room
+     * @return array of events
      */
     public static function selectRoom($campus, $building, $room) {
         $db = Database::getDatabase();
+        $results = NULL;
         try {
             $stmt = $db->prepare(DBQueries::$SELECT_ROOM);
             $stmt->bindParam(1, $campus);
@@ -132,6 +134,8 @@ class DBHandler {
         } catch (PDOException $ex) {
             exit("Failed to insert or update row: " . $ex->getMessage());
         }
+
+        return $results;
     }
 
     /**

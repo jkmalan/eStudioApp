@@ -43,3 +43,23 @@ if ($function_type === "prof") {
         echo "<option value='" . $prof['instr_xid'] . "'>" . $prof['instr_fname'] . " " . $prof['instr_lname'] . "</option>";
     }
 }
+
+if ($function_type === "roomEvents") {
+    $camp = filter_input(INPUT_GET, 'camp');
+    $bldg = filter_input(INPUT_GET, 'bldg');
+    $room = filter_input(INPUT_GET, 'room');
+    $events = DBHandler::selectRoom($camp, $bldg, $room);
+    $results = array();
+    foreach ($events as $event) {
+        $results[] = array(
+            'id' => $event['event_id'],
+            'title' => $event['event_title'],
+            'crn' => $event['crn_key'],
+            'camp' => $event['camp_name'],
+            'bldg' => $event['bldg_name'],
+            'room' => $event['room_name'],
+            'start' => strtotime(new DateTime($event['event_time_start'] . " " . $event['event_date']))*1000,
+            'end' => strtotime(new DateTime($event['event_time_end'] . " " . $event['event_date']))*1000
+        );
+    }
+}

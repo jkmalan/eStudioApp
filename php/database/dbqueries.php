@@ -30,6 +30,7 @@ class DBQueries {
             . "PRIMARY KEY (instr_xid));",
         "CREATE_EVENTS" => "CREATE TABLE IF NOT EXISTS `events` ("
             . "event_id INT NOT NULL AUTO_INCREMENT,"
+            . "event_title CHAR(32) NOT NULL,"
             . "event_date DATE NOT NULL,"
             . "event_dow CHAR(1) NOT NULL,"
             . "event_time_start TIME NOT NULL,"
@@ -56,7 +57,7 @@ class DBQueries {
 
     public static $SELECT_INSTRUCTORS = "SELECT DISTINCT instr_xid, instr_fname, instr_lname FROM `instructors` WHERE true;";
 
-    public static $SELECT_ROOM = "SELECT * FROM `events` WHERE camp_code=? AND bldg_code=? AND room_code=?;";
+    public static $SELECT_ROOM = "SELECT event_id, event_title, event_time_start, event_time_end, crn_key, camp_name, bldg_name, room_name FROM `events` e INNER JOIN rooms r ON e.camp_code = r.camp_code AND e.bldg_code = r.bldg_code AND e.room_code = r.room_code WHERE e.camp_code=? AND e.bldg_code=? AND e.room_code=?;";
 
     public static $SELECT_COURSE = "SELECT * FROM `events` WHERE subj_code=? AND crse_code=?;";
 
