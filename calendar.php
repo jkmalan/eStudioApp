@@ -64,7 +64,14 @@ $page_title = "Calendar";
             modal: "#events-modal",
             modal_type: "template",
             modal_title: (function(e) { return e.title }),
-            events_source: '/php/functions.php?ftype=roomEvents&camp=Q&bldg=MAR&room=137'
+            events_source: [{
+                    "id": 293,
+                    "title": "Event 1",
+                    "url": "http://example.com",
+                    "class": "event-important",
+                    "start": 1511678000000, // Milliseconds
+                    "end": 1511689000000 // Milliseconds
+                }]
         });
 
         $("button[data-calendar-nav]").each(function() {
