@@ -61,4 +61,10 @@ class DBQueries {
 
     public static $SELECT_COURSE = "SELECT * FROM `events` WHERE subj_code=? AND crse_code=?;";
 
+    public static $SELECT_SUBJECTS = "SELECT DISTINCT subj_code, subj_name FROM courses WHERE true;";
+
+    public static $SELECT_COURSES = "SELECT DISTINCT crse_code, crse_name FROM courses WHERE subj_code=?;";
+
+    public static $SEARCH_ROOMS_BY_TIME = "SELECT DISTINCT r.bldg_code, r.bldg_name, r.room_code, r.room_name FROM rooms r INNER JOIN events e ON r.room_code=e.room_code AND r.bldg_code=e.bldg_code AND r.camp_code=e.camp_code WHERE event_time_start >= ?;";
+
 }

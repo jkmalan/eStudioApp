@@ -59,6 +59,21 @@ class DBHandler {
 
     }
 
+    public static function searchRooms($date, $time) {
+        $db = Database::getDatabase();
+        $results = NULL;
+        try {
+            $stmt = $db->prepare(DBQueries::$SEARCH_ROOMS_BY_TIME);
+            $stmt->bindParam(1, $time);
+            $stmt->execute();
+            $results = $stmt->fetchAll();
+        } catch (PDOException $ex) {
+            exit("Failed to query data: " . $ex->getMessage());
+        }
+
+        return $results;
+    }
+
     public static function selectCampuses() {
         $db = Database::getDatabase();
         $results = NULL;
@@ -92,6 +107,33 @@ class DBHandler {
         try {
             $stmt = $db->prepare(DBQueries::$SELECT_ROOMS);
             $stmt->bindParam(1,$bldg);
+            $stmt->execute();
+            $results = $stmt->fetchAll();
+        } catch (PDOException $ex) {
+            exit("Failed to query data: " . $ex->getMessage());
+        }
+
+        return $results;
+    }
+
+    public static function selectSubjects() {
+        $db = Database::getDatabase();
+        $results = NULL;
+        try {
+            $results = $db->query(DBQueries::$SELECT_SUBJECTS);
+        } catch (PDOException $ex) {
+            exit("Failed to query data: " . $ex->getMessage());
+        }
+
+        return $results;
+    }
+
+    public static function selectCourses($subj) {
+        $db = Database::getDatabase();
+        $results = NULL;
+        try {
+            $stmt = $db->prepare(DBQueries::$SELECT_COURSES);
+            $stmt->bindParam(1,$subj);
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {

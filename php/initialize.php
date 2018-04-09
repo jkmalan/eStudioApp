@@ -16,6 +16,7 @@ require_once 'settings/config.php';
 require_once 'database/dbqueries.php';
 require_once 'database/database.php';
 require_once 'database/dbhandler.php';
+require_once 'functions.php';
 
 Database::connect();
 DBHandler::import(null);
