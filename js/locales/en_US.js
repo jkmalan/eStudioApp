@@ -11,8 +11,8 @@ if (!window.calendar_languages) {
 
 window.calendar_languages['en_US'] = {
     // Locale Specific Settings
-    time_iso8601: true,
-    week_start: 2, // Specifies the first day of the week - 2 for Sunday, 1 for Monday
+    time_iso8601: true, // Specifies the time according to the 24 hour format
+    week_start: 0, // Specifies the first day of the week - 0 for Sunday, 1 for Monday
     week_iso8601: false, // Specifies the first week of the year according to ISO 8601
 
     // Error Messages

@@ -10,6 +10,14 @@ require_once './php/initialize.php';
 
 $page_style = "calendar.css";
 $page_title = "Calendar";
+
+
+if ($_SERVER["REQUEST_METHOD"] == "GET") {
+    $campus = validate($_GET["campus"]);
+    $building = validate($_GET["building"]);
+    $room = validate($_GET["room"]);
+}
+
 ?>
 <html>
 
@@ -20,13 +28,26 @@ $page_title = "Calendar";
 <?php include ROOT_DIR . 'php/template/navigation_template.php'; ?>
 
     <main>
+        <div>
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+
+            </form>
+        </div>
+        <div>
+            <div id="calendar">
+
+            </div>
+        </div>
+
+
+        <!--
         <div class="container">
             <div class="row">
                 <div class="col-xs-4 text-center">
                     <button class="btn btn-primary" data-calendar-nav="prev">&laquo;</button>
                 </div>
                 <div class="col-xs-4 text-center text-nowrap">
-                    <h3>Week 23</h3> <!-- Week # -->
+                    <h3></h3>
                 </div>
                 <div class="col-xs-4 text-center">
                     <button class="btn btn-primary" data-calendar-nav="next">&raquo;</button>
@@ -37,7 +58,7 @@ $page_title = "Calendar";
             </div>
         </div>
 
-        <<div class="modal fade" id="events-modal">
+        <div class="modal fade" id="events-modal">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -51,40 +72,13 @@ $page_title = "Calendar";
                     </div>
                 </div>
             </div>
-        </div>
+        </div>-->
     </main>
 
 <?php include ROOT_DIR . 'php/template/footer_template.php'; ?>
 
 <script type="text/javascript">
-    (function($) {
-        let calendar = $("#calendar").calendar({
-            tmpl_path: "/tmpls/",
-            view: 'week',
-            modal: "#events-modal",
-            modal_type: "template",
-            modal_title: (function(e) { return e.title }),
-            events_source: [{
-                    "id": 293,
-                    "title": "Event 1",
-                    "url": "http://example.com",
-                    "class": "event-important",
-                    "start": 1511678000000, // Milliseconds
-                    "end": 1511689000000 // Milliseconds
-                }]
-        });
 
-        $("button[data-calendar-nav]").each(function() {
-            let $this = $(this);
-            $this.click(function () {
-                calendar.navigate($this.data("calendar-nav"));
-            });
-        });
-
-        $("#events-modal .modal-header, #events-modal .modal-footer").on("click", function(e) {
-
-        });
-    }(jQuery));
 </script>
 
 </body>
