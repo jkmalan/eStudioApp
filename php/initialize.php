@@ -19,4 +19,6 @@ require_once 'database/dbhandler.php';
 require_once 'functions.php';
 
 Database::connect();
+DBHandler::prepareDB();
+DBHandler::populateDB(ROOT_DIR . 'data/room_201810.csv');
 

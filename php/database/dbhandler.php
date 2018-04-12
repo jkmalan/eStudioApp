@@ -11,6 +11,75 @@
  */
 class DBHandler {
 
+    public static function prepareDB() {
+        $db = Database::getDatabase();
+        try {
+            foreach (DBQueries::$CREATE_TABLES as $table) {
+                $results = $db->exec($table);
+                if ($results) {
+
+                }
+            }
+        } catch (PDOException $ex) {
+
+        }
+    }
+
+    public static function populateDB($file) {
+        if (($data = fopen($file, "r")) !== FALSE) {
+            $header = fgetcsv($data, 0, ",");
+            while (($row =fgetcsv($data, 0, ",")) !== FALSE) {
+                self::insertEventByRow($header, $row);
+            }
+        }
+    }
+
+    public static function insertEventByRow($header, $row) {
+        $fields = array();
+        for ($i = 0; $i < count($header); $i++) {
+            $fields[$header[$i]] = $row[$i];
+        }
+
+        $db = Database::getDatabase();
+        try {
+            $stmtRoom = $db->prepare(DBQueries::$INSERT_ROOM);
+            $stmtRoom->bindParam(1, $fields['camp_code']);
+            $stmtRoom->bindParam(2, $fields['camp_name']);
+            $stmtRoom->bindParam(3, $fields['bldg_code']);
+            $stmtRoom->bindParam(4, $fields['bldg_name']);
+            $stmtRoom->bindParam(5, $fields['room_code']);
+            $stmtRoom->bindParam(6, $fields['room_name']);
+            $stmtRoom->execute();
+            $stmtCourse = $db->prepare(DBQueries::$INSERT_COURSE);
+            $stmtCourse->bindParam(1, $fields['subj_code']);
+            $stmtCourse->bindParam(2, $fields['subj_name']);
+            $stmtCourse->bindParam(3, $fields['crse_code']);
+            $stmtCourse->bindParam(4, $fields['crse_name']);
+            $stmtCourse->execute();
+            $stmtInstructor = $db->prepare(DBQueries::$INSERT_INSTRUCTOR);
+            $stmtInstructor->bindParam(1, $fields['instr_xid']);
+            $stmtInstructor->bindParam(2, $fields['instr_fname']);
+            $stmtInstructor->bindParam(3, $fields['instr_lname']);
+            $stmtInstructor->execute();
+            $stmtEvent = $db->prepare(DBQueries::$INSERT_EVENT);
+            $stmtEvent->bindParam(1, $fields['event_title']);
+            $stmtEvent->bindParam(2, $fields['event_date']);
+            $stmtEvent->bindParam(3, $fields['event_time_start']);
+            $stmtEvent->bindParam(4, $fields['event_time_end']);
+            $stmtEvent->bindParam(5, $fields['term_code']);
+            $stmtEvent->bindParam(6, $fields['crn_key']);
+            $stmtEvent->bindParam(7, $fields['camp_code']);
+            $stmtEvent->bindParam(8, $fields['bldg_code']);
+            $stmtEvent->bindParam(9, $fields['room_code']);
+            $stmtEvent->bindParam(10, $fields['subj_code']);
+            $stmtEvent->bindParam(11, $fields['crse_code']);
+            $stmtEvent->bindParam(12, $fields['instr_xid']);
+            $stmtEvent->execute();
+        } catch (PDOException $ex) {
+
+        }
+    }
+
     public static function searchRoomByTime($date, $time_start, $time_end = NULL) {
         $db = Database::getDatabase();
         $results = NULL;
@@ -60,15 +129,51 @@ class DBHandler {
     }
 
     public static function searchTimeByRoom($campus, $building, $room) {
+        $db = Database::getDatabase();
+        $results = NULL;
+        try {
+            $stmt = $db->prepare(DBQueries::$SEARCH_TIMEBYROOM);
+            $stmt->bindParam(1, $campus);
+            $stmt->bindParam(2, $building);
+            $stmt->bindParam(3, $room);
+            $stmt->execute();
+            $results = $stmt->fetchAll();
+        } catch (PDOException $ex) {
 
+        }
+
+        return $results;
     }
 
     public static function searchTimeByCourse($subject, $course) {
+        $db = Database::getDatabase();
+        $results = NULL;
+        try {
+            $stmt = $db->prepare(DBQueries::$SEARCH_TIMEBYCOURSE);
+            $stmt->bindParam(1, $subject);
+            $stmt->bindParam(2, $course);
+            $stmt->execute();
+            $results = $stmt->fetchAll();
+        } catch (PDOException $ex) {
 
+        }
+
+        return $results;
     }
 
     public static function searchTimeByInstructor($instructor) {
+        $db = Database::getDatabase();
+        $results = NULL;
+        try {
+            $stmt = $db->prepare(DBQueries::$SEARCH_TIMEBYINSTRUCTOR);
+            $stmt->bindParam(1, $instructor);
+            $stmt->execute();
+            $results = $stmt->fetchAll();
+        } catch (PDOException $ex) {
 
+        }
+
+        return $results;
     }
 
     public static function searchRooms($date, $time) {
