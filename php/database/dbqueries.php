@@ -65,6 +65,12 @@ class DBQueries {
 
     public static $SELECT_COURSES = "SELECT DISTINCT crse_code, crse_name FROM courses WHERE subj_code=?;";
 
-    public static $SEARCH_ROOMS_BY_TIME = "SELECT DISTINCT r.bldg_code, r.bldg_name, r.room_code, r.room_name FROM rooms r INNER JOIN events e ON r.room_code=e.room_code AND r.bldg_code=e.bldg_code AND r.camp_code=e.camp_code WHERE event_time_start >= ?;";
+    public static $SEARCH_ROOMS_BY_TIME = "SELECT r.bldg_code, r.bldg_name, r.room_code, r.room_name FROM rooms r INNER JOIN events e ON r.room_code=e.room_code AND r.bldg_code=e.bldg_code AND r.camp_code=e.camp_code WHERE event_time_start >= ?;";
+
+    public static $SEARCH_ROOMBYTIME = "SELECT r.camp_code, r.camp_name, r.bldg_code, r.bldg_name, r.room_code, r.room_name, e.event_time_start, e.event_time_end FROM rooms r INNER JOIN events e ON r.camp_code = e.camp_code AND r.bldg_code = e.bldg_code AND r.room_code = e.room_code WHERE event_date = ? AND event_time_start >= ? AND (event_time_end IS NULL OR event_time_end <= ?);";
+
+    public static $SEARCH_ROOMBYCOURSE = "SELECT r.camp_code, r.camp_name, r.bldg_code, r.bldg_name, r.room_code, r.room_name, e.event_time_start, e.event_time_end FROM rooms r INNER JOIN events e ON r.camp_code = e.camp_code AND r.bldg_code = e.bldg_code AND r.room_code = e.room_code WHERE subj_code = ? AND crse_code = ?;";
+
+    public static $SEARCH_ROOMBYINSTRUCTOR = "SELECT r.camp_code, r.camp_name, r.bldg_code, r.bldg_name, r.room_code, r.room_name, e.event_time_start, e.event_time_end FROM rooms r INNER JOIN events e ON r.camp_code = e.camp_code AND r.bldg_code = e.bldg_code AND r.room_code = e.room_code WHERE instr_xid = ?";
 
 }

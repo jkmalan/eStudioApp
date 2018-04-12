@@ -19,5 +19,4 @@ require_once 'database/dbhandler.php';
 require_once 'functions.php';
 
 Database::connect();
-DBHandler::import(null);
 

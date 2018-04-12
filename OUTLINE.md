@@ -1,0 +1,21 @@
+Search Functions
+- searchRoomByTime(date, time_start, time_end = NULL)
+- searchRoomByCourse(subject, course)
+- searchRoomByInstructor(instructor)
+- searchTimeByRoom(campus, building, room)
+- searchTimeByCourse(subject, course)
+- searchTimeByInstructor(instructor)
+- selectCampuses()
+- selectBuildings(campus)
+- selectRooms(campus, building)
+- selectSubjects()
+- selectCourses(subject)
+- selectInstructor()
+- selectRoom(campus, building, room)
+- selectCourse(subject, course)
+- selectInstructor(instructor)
+
+Event Functions
+- addEvent(details)
+- remEvent(id)
+- modEvent(id, details)

@@ -11,51 +11,63 @@
  */
 class DBHandler {
 
-    /**
-     * Imports a CSV into the SQL database
-     *
-     * @param $file
-     */
-    public static function import($file) {
+    public static function searchRoomByTime($date, $time_start, $time_end = NULL) {
         $db = Database::getDatabase();
-        foreach (DBQueries::$CREATE_TABLES as $query) {
-            $createTable = $db->exec($query);
-            if ($createTable) {
-                echo "Table created!";
-            }
+        $results = NULL;
+        try {
+            $stmt = $db->prepare(DBQueries::$SEARCH_ROOMBYTIME);
+            $stmt->bindParam(1, $date);
+            $stmt->bindParam(2, $time_start);
+            $stmt->bindParam(3,$time_end);
+            $stmt->execute();
+            $results = $stmt->fetchAll();
+        } catch (PDOException $ex) {
+
         }
 
-        /* Temporarily disable file read in
-        if (($data = fopen($file, "r")) !== FALSE) {
-            $header = fgetcsv($data, 0, ",");
-            while (($row = fgetcsv($data, 0, ",")) !== FALSE) {
-                self::insertEvent(self::bindHeader($header, $row));
-            }
-        }
-        */
+        return $results;
     }
 
-    /*
-     * Binds column headers to row values as a key-value
-     *
-     * @param $header
-     * @param $row
-     * @return array
-     */
-    private static function bindHeader($header, $row) {
-        $fieldMap = array();
-        for ($i = 0; $i < count($header); $i++) {
-            $fieldMap[$header[$i]] = $row[$i];
+    public static function searchRoomByCourse($subject, $course) {
+        $db = Database::getDatabase();
+        $results = NULL;
+        try {
+            $stmt = $db->prepare(DBQueries::$SEARCH_ROOMBYCOURSE);
+            $stmt->bindParam(1, $subject);
+            $stmt->bindParam(2, $course);
+            $stmt->execute();
+            $results = $stmt->fetchAll();
+        } catch (PDOException $ex) {
+
         }
-        return $fieldMap;
+
+        return $results;
     }
 
-    /*
-     * Inserts an event into the database
-     *
-     * @param $fieldMap An array of key-value pairs
-     */
-    private static function insertEvent($fieldMap) {
+    public static function searchRoomsByInstructor($instructor) {
+        $db = Database::getDatabase();
+        $results = NULL;
+        try {
+            $stmt = $db->prepare(DBQueries::$SEARCH_ROOMBYINSTRUCTOR);
+            $stmt->bindParam(1, $instructor);
+            $stmt->execute();
+            $results = $stmt->fetchAll();
+        } catch (PDOException $ex) {
+
+        }
+
+        return $results;
+    }
+
+    public static function searchTimeByRoom($campus, $building, $room) {
+
+    }
+
+    public static function searchTimeByCourse($subject, $course) {
+
+    }
+
+    public static function searchTimeByInstructor($instructor) {
 
     }
 
