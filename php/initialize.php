@@ -20,5 +20,5 @@ require_once 'functions.php';
 
 Database::connect();
 DBHandler::prepareDB();
-DBHandler::populateDB(ROOT_DIR . 'data/room_201810.csv');
+// DBHandler::populateDB(ROOT_DIR . 'data/room_201810.csv'); // Populates the database from a properly formatted CSV
 

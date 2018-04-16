@@ -21,7 +21,7 @@ class DBHandler {
                 }
             }
         } catch (PDOException $ex) {
-
+            exit($ex->getMessage());
         }
     }
 
@@ -43,40 +43,41 @@ class DBHandler {
         $db = Database::getDatabase();
         try {
             $stmtRoom = $db->prepare(DBQueries::$INSERT_ROOM);
-            $stmtRoom->bindParam(1, $fields['camp_code']);
-            $stmtRoom->bindParam(2, $fields['camp_name']);
-            $stmtRoom->bindParam(3, $fields['bldg_code']);
-            $stmtRoom->bindParam(4, $fields['bldg_name']);
-            $stmtRoom->bindParam(5, $fields['room_code']);
-            $stmtRoom->bindParam(6, $fields['room_name']);
+            $stmtRoom->bindParam(1, $fields['camp_code']); // Good
+            $stmtRoom->bindParam(2, $fields['camp_name']); // Good
+            $stmtRoom->bindParam(3, $fields['bldg_code']); // Good
+            $stmtRoom->bindParam(4, $fields['bldg_name']); // Good
+            $stmtRoom->bindParam(5, $fields['room_code']); // Good
+            $stmtRoom->bindParam(6, $fields['room_name']); // Good
             $stmtRoom->execute();
             $stmtCourse = $db->prepare(DBQueries::$INSERT_COURSE);
-            $stmtCourse->bindParam(1, $fields['subj_code']);
-            $stmtCourse->bindParam(2, $fields['subj_name']);
-            $stmtCourse->bindParam(3, $fields['crse_code']);
-            $stmtCourse->bindParam(4, $fields['crse_name']);
+            $stmtCourse->bindParam(1, $fields['subj_code']); // Good
+            $stmtCourse->bindParam(2, $fields['subj_name']); // Good
+            $stmtCourse->bindParam(3, $fields['crse_code']); // Good
+            $stmtCourse->bindParam(4, $fields['crse_name']); // Good
             $stmtCourse->execute();
-            $stmtInstructor = $db->prepare(DBQueries::$INSERT_INSTRUCTOR);
-            $stmtInstructor->bindParam(1, $fields['instr_xid']);
-            $stmtInstructor->bindParam(2, $fields['instr_fname']);
-            $stmtInstructor->bindParam(3, $fields['instr_lname']);
-            $stmtInstructor->execute();
+            if (!empty($fields['instr_xid']) || $fields['instr_xid'] !== NULL) {
+                $stmtInstructor = $db->prepare(DBQueries::$INSERT_INSTRUCTOR);
+                $stmtInstructor->bindParam(1, $fields['instr_xid']);
+                $stmtInstructor->bindParam(2, $fields['instr_fname']);
+                $stmtInstructor->bindParam(3, $fields['instr_lname']);
+                $stmtInstructor->execute();
+            }
             $stmtEvent = $db->prepare(DBQueries::$INSERT_EVENT);
             $stmtEvent->bindParam(1, $fields['event_title']);
-            $stmtEvent->bindParam(2, $fields['event_date']);
-            $stmtEvent->bindParam(3, $fields['event_time_start']);
-            $stmtEvent->bindParam(4, $fields['event_time_end']);
-            $stmtEvent->bindParam(5, $fields['term_code']);
-            $stmtEvent->bindParam(6, $fields['crn_key']);
-            $stmtEvent->bindParam(7, $fields['camp_code']);
-            $stmtEvent->bindParam(8, $fields['bldg_code']);
-            $stmtEvent->bindParam(9, $fields['room_code']);
-            $stmtEvent->bindParam(10, $fields['subj_code']);
-            $stmtEvent->bindParam(11, $fields['crse_code']);
-            $stmtEvent->bindParam(12, $fields['instr_xid']);
+            $stmtEvent->bindParam(2, $fields['event_time_start']);
+            $stmtEvent->bindParam(3, $fields['event_time_end']);
+            $stmtEvent->bindParam(4, $fields['term_code']);
+            $stmtEvent->bindParam(5, $fields['crn_key']);
+            $stmtEvent->bindParam(6, $fields['camp_code']);
+            $stmtEvent->bindParam(7, $fields['bldg_code']);
+            $stmtEvent->bindParam(8, $fields['room_code']);
+            $stmtEvent->bindParam(9, $fields['subj_code']);
+            $stmtEvent->bindParam(10, $fields['crse_code']);
+            $stmtEvent->bindParam(11, $fields['instr_xid']);
             $stmtEvent->execute();
         } catch (PDOException $ex) {
-
+            exit($ex->getMessage());
         }
     }
 
@@ -91,7 +92,7 @@ class DBHandler {
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-
+            exit($ex->getMessage());
         }
 
         return $results;
@@ -107,7 +108,7 @@ class DBHandler {
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-
+            exit($ex->getMessage());
         }
 
         return $results;
@@ -122,7 +123,7 @@ class DBHandler {
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-
+            exit($ex->getMessage());
         }
 
         return $results;
@@ -139,7 +140,7 @@ class DBHandler {
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-
+            exit($ex->getMessage());
         }
 
         return $results;
@@ -155,7 +156,7 @@ class DBHandler {
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-
+            exit($ex->getMessage());
         }
 
         return $results;
@@ -170,11 +171,17 @@ class DBHandler {
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-
+            exit($ex->getMessage());
         }
 
         return $results;
     }
+
+    /** SEPARATOR // SEPARATOR // SEPARATOR // SEPARATOR ///
+    ///                                                  ///
+    ///   \/\/\/  //      OLD METHODS       //   \/\/\/  ///
+    ///                                                  ///
+    /// SEPARATOR // SEPARATOR // SEPARATOR // SEPARATOR **/
 
     public static function searchRooms($date, $time) {
         $db = Database::getDatabase();

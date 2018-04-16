@@ -30,10 +30,9 @@ class DBQueries {
             . "PRIMARY KEY (instr_xid));",
         "CREATE_EVENTS" => "CREATE TABLE IF NOT EXISTS `events` ("
             . "event_id INT NOT NULL AUTO_INCREMENT,"
-            . "event_title CHAR(32) NOT NULL,"
-            . "event_date DATE NOT NULL,"
-            . "event_time_start TIME NOT NULL,"
-            . "event_time_end TIME NOT NULL,"
+            . "event_title CHAR(64) NOT NULL,"
+            . "event_time_start TIMESTAMP(2) NOT NULL,"
+            . "event_time_end TIMESTAMP(2) NOT NULL,"
             . "term_code CHAR(8) NOT NULL,"
             . "crn_key INT NOT NULL,"
             . "camp_code CHAR(8) NOT NULL,"
@@ -41,20 +40,20 @@ class DBQueries {
             . "room_code CHAR(8) NOT NULL,"
             . "subj_code CHAR(8) NOT NULL,"
             . "crse_code CHAR(8) NOT NULL,"
-            . "instr_xid CHAR(9) NOT NULL,"
+            . "instr_xid CHAR(9),"
             . "PRIMARY KEY (event_id),"
             . "FOREIGN KEY (camp_code, bldg_code, room_code) REFERENCES rooms(camp_code, bldg_code, room_code),"
             . "FOREIGN KEY (subj_code, crse_code) REFERENCES courses(subj_code, crse_code),"
             . "FOREIGN KEY (instr_xid) REFERENCES instructors(instr_xid));"
     );
 
-    public static $INSERT_ROOM = "INSERT INTO rooms (camp_code, camp_name, bldg_code, bldg_name, room_code, room_name) VALUES (?, ?, ?, ?, ?, ?);";
+    public static $INSERT_ROOM = "INSERT IGNORE INTO rooms (camp_code, camp_name, bldg_code, bldg_name, room_code, room_name) VALUES (?, ?, ?, ?, ?, ?);";
 
-    public static $INSERT_COURSE = "INSERT INTO courses (subj_code, subj_name, crse_code, crse_name) VALUES (?, ?, ?, ?);";
+    public static $INSERT_COURSE = "INSERT IGNORE INTO courses (subj_code, subj_name, crse_code, crse_name) VALUES (?, ?, ?, ?);";
 
-    public static $INSERT_INSTRUCTOR = "INSERT INTO instructors (instr_xid, instr_fname, instr_lname) VALUES (?, ?, ?);";
+    public static $INSERT_INSTRUCTOR = "INSERT IGNORE INTO instructors (instr_xid, instr_fname, instr_lname) VALUES (?, ?, ?);";
 
-    public static $INSERT_EVENT = "INSERT INTO events (event_title, event_date, event_time_start, event_time_end, term_code, crn_key, camp_code, bldg_code, room_code, subj_code, crse_code, instr_xid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    public static $INSERT_EVENT = "INSERT INTO events (event_title, event_time_start, event_time_end, term_code, crn_key, camp_code, bldg_code, room_code, subj_code, crse_code, instr_xid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
     public static $SELECT_CAMPUSES = "SELECT DISTINCT camp_code, camp_name FROM rooms WHERE true;";
 
