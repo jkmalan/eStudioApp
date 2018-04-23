@@ -8,23 +8,30 @@
 
 /**
  * Handles input and output of data into the database
+ *
+ * @author jkmalan (aka John Malandrakis)
  */
 class DBHandler {
 
+    /**
+     * Creates all necessary tables if they do not already exist
+     */
     public static function prepareDB() {
         $db = Database::getDatabase();
         try {
             foreach (DBQueries::$CREATE_TABLES as $table) {
-                $results = $db->exec($table);
-                if ($results) {
-
-                }
+                $db->exec($table);
             }
         } catch (PDOException $ex) {
             exit($ex->getMessage());
         }
     }
 
+    /**
+     * Adds events to the database given a CSV data file
+     *
+     * @param $file
+     */
     public static function populateDB($file) {
         if (($data = fopen($file, "r")) !== FALSE) {
             $header = fgetcsv($data, 0, ",");
@@ -34,7 +41,13 @@ class DBHandler {
         }
     }
 
-    public static function insertEventByRow($header, $row) {
+    /*
+     * Adds a single event and relevant data to the database
+     *
+     * Requires a header containing the column fields
+     * Requires an array containing the matching values
+     */
+    private static function insertEventByRow($header, $row) {
         $fields = array();
         for ($i = 0; $i < count($header); $i++) {
             $fields[$header[$i]] = $row[$i];
@@ -42,40 +55,49 @@ class DBHandler {
 
         $db = Database::getDatabase();
         try {
+
+            /*
+             * Field names correspond to the column headers in the CSV
+             * Some values can be null or empty: room_name,
+             */
             $stmtRoom = $db->prepare(DBQueries::$INSERT_ROOM);
-            $stmtRoom->bindParam(1, $fields['camp_code']); // Good
-            $stmtRoom->bindParam(2, $fields['camp_name']); // Good
-            $stmtRoom->bindParam(3, $fields['bldg_code']); // Good
-            $stmtRoom->bindParam(4, $fields['bldg_name']); // Good
-            $stmtRoom->bindParam(5, $fields['room_code']); // Good
-            $stmtRoom->bindParam(6, $fields['room_name']); // Good
+            $stmtRoom->bindParam(1, $fields['camp_code']);
+            $stmtRoom->bindParam(2, $fields['camp_name']);
+            $stmtRoom->bindParam(3, $fields['bldg_code']);
+            $stmtRoom->bindParam(4, $fields['bldg_name']);
+            $stmtRoom->bindParam(5, $fields['room_code']);
+            $stmtRoom->bindParam(6, $fields['room_name']);
             $stmtRoom->execute();
+
             $stmtCourse = $db->prepare(DBQueries::$INSERT_COURSE);
-            $stmtCourse->bindParam(1, $fields['subj_code']); // Good
-            $stmtCourse->bindParam(2, $fields['subj_name']); // Good
-            $stmtCourse->bindParam(3, $fields['crse_code']); // Good
-            $stmtCourse->bindParam(4, $fields['crse_name']); // Good
+            $stmtCourse->bindParam(1, $fields['subj_code']);
+            $stmtCourse->bindParam(2, $fields['subj_name']);
+            $stmtCourse->bindParam(3, $fields['crse_code']);
+            $stmtCourse->bindParam(4, $fields['crse_name']);
             $stmtCourse->execute();
-            if (!empty($fields['instr_xid']) || $fields['instr_xid'] !== NULL) {
-                $stmtInstructor = $db->prepare(DBQueries::$INSERT_INSTRUCTOR);
-                $stmtInstructor->bindParam(1, $fields['instr_xid']);
-                $stmtInstructor->bindParam(2, $fields['instr_fname']);
-                $stmtInstructor->bindParam(3, $fields['instr_lname']);
-                $stmtInstructor->execute();
-            }
+
+            $stmtInstructor = $db->prepare(DBQueries::$INSERT_INSTRUCTOR);
+            $stmtInstructor->bindParam(1, $fields['xid']);
+            $stmtInstructor->bindParam(2, $fields['fname']);
+            $stmtInstructor->bindParam(2, $fields['mname']);
+            $stmtInstructor->bindParam(3, $fields['lname']);
+            $stmtInstructor->execute();
+
             $stmtEvent = $db->prepare(DBQueries::$INSERT_EVENT);
-            $stmtEvent->bindParam(1, $fields['event_title']);
-            $stmtEvent->bindParam(2, $fields['event_time_start']);
-            $stmtEvent->bindParam(3, $fields['event_time_end']);
-            $stmtEvent->bindParam(4, $fields['term_code']);
-            $stmtEvent->bindParam(5, $fields['crn_key']);
-            $stmtEvent->bindParam(6, $fields['camp_code']);
-            $stmtEvent->bindParam(7, $fields['bldg_code']);
-            $stmtEvent->bindParam(8, $fields['room_code']);
-            $stmtEvent->bindParam(9, $fields['subj_code']);
-            $stmtEvent->bindParam(10, $fields['crse_code']);
-            $stmtEvent->bindParam(11, $fields['instr_xid']);
+            $stmtEvent->bindParam(1, $fields['eid']);
+            $stmtEvent->bindParam(2, $fields['title']);
+            $stmtEvent->bindParam(3, $fields['time_start']);
+            $stmtEvent->bindParam(4, $fields['time_end']);
+            $stmtEvent->bindParam(5, $fields['term_code']);
+            $stmtEvent->bindParam(6, $fields['crn_key']);
+            $stmtEvent->bindParam(7, $fields['camp_code']);
+            $stmtEvent->bindParam(8, $fields['bldg_code']);
+            $stmtEvent->bindParam(9, $fields['room_code']);
+            $stmtEvent->bindParam(10, $fields['subj_code']);
+            $stmtEvent->bindParam(11, $fields['crse_code']);
+            $stmtEvent->bindParam(12, $fields['xid']);
             $stmtEvent->execute();
+
         } catch (PDOException $ex) {
             exit($ex->getMessage());
         }

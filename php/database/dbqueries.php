@@ -6,83 +6,170 @@
  * All other rights reserved.
  */
 
+/**
+ * Static constants containing the various pre-prepared SQL queries
+ *
+ * @author jkmalan (aka John Malandrakis)
+ */
 class DBQueries {
 
+    /**
+     * @var array A list of table creation queries
+     */
     public static $CREATE_TABLES = array(
-        "CREATE_ROOMS" => "CREATE TABLE IF NOT EXISTS rooms ("
+
+        "CREATE_ROOMS" =>
+            "CREATE TABLE IF NOT EXISTS rooms ("
             . "camp_code CHAR(8) NOT NULL,"
             . "camp_name CHAR(32) NOT NULL,"
             . "bldg_code CHAR(8) NOT NULL,"
             . "bldg_name CHAR(32) NOT NULL,"
             . "room_code CHAR(8) NOT NULL,"
-            . "room_name CHAR(32) NOT NULL,"
+            . "room_desc CHAR(32),"
             . "PRIMARY KEY (camp_code, bldg_code, room_code));",
-        "CREATE_COURSES" => "CREATE TABLE IF NOT EXISTS courses ("
+
+        "CREATE_COURSES" =>
+            "CREATE TABLE IF NOT EXISTS courses ("
             . "subj_code CHAR(8) NOT NULL,"
             . "subj_name CHAR(32) NOT NULL,"
             . "crse_code CHAR(8) NOT NULL,"
             . "crse_name CHAR(32) NOT NULL,"
             . "PRIMARY KEY (subj_code, crse_code));",
-        "CREATE_INSTRUCTORS" => "CREATE TABLE IF NOT EXISTS instructors ("
-            . "instr_xid CHAR(9) NOT NULL,"
-            . "instr_fname CHAR(32) NOT NULL,"
-            . "instr_lname CHAR(32) NOT NULL,"
-            . "PRIMARY KEY (instr_xid));",
-        "CREATE_EVENTS" => "CREATE TABLE IF NOT EXISTS `events` ("
-            . "event_id INT NOT NULL AUTO_INCREMENT,"
-            . "event_title CHAR(64) NOT NULL,"
-            . "event_time_start TIMESTAMP(2) NOT NULL,"
-            . "event_time_end TIMESTAMP(2) NOT NULL,"
-            . "term_code CHAR(8) NOT NULL,"
+
+        "CREATE_INSTRUCTORS" =>
+            "CREATE TABLE IF NOT EXISTS instructors ("
+            . "xid CHAR(9) NOT NULL,"
+            . "fname CHAR(32) NOT NULL,"
+            . "mname CHAR(32),"
+            . "lname CHAR(32) NOT NULL,"
+            . "PRIMARY KEY (xid));",
+
+        "CREATE_EVENTS" =>
+            "CREATE TABLE IF NOT EXISTS `events` ("
+            . "term_code INT NOT NULL,"
             . "crn_key INT NOT NULL,"
+            . "time_start DATETIME NOT NULL,"
+            . "time_end DATETIME NOT NULL,"
+            . "title CHAR(64) NOT NULL,"
             . "camp_code CHAR(8) NOT NULL,"
             . "bldg_code CHAR(8) NOT NULL,"
             . "room_code CHAR(8) NOT NULL,"
             . "subj_code CHAR(8) NOT NULL,"
             . "crse_code CHAR(8) NOT NULL,"
-            . "instr_xid CHAR(9),"
-            . "PRIMARY KEY (event_id),"
+            . "xid CHAR(9),"
+            . "PRIMARY KEY (term_code, crn_key, time_start),"
             . "FOREIGN KEY (camp_code, bldg_code, room_code) REFERENCES rooms(camp_code, bldg_code, room_code),"
             . "FOREIGN KEY (subj_code, crse_code) REFERENCES courses(subj_code, crse_code),"
-            . "FOREIGN KEY (instr_xid) REFERENCES instructors(instr_xid));"
+            . "FOREIGN KEY (xid) REFERENCES instructors(xid));"
     );
 
-    public static $INSERT_ROOM = "INSERT IGNORE INTO rooms (camp_code, camp_name, bldg_code, bldg_name, room_code, room_name) VALUES (?, ?, ?, ?, ?, ?);";
+    /**
+     * @var string A query to insert a single room into the rooms table
+     */
+    public static $INSERT_ROOM =
+        "INSERT INTO rooms (camp_code, camp_name, bldg_code, bldg_name, room_code, room_name) "
+        . "VALUES (?, ?, ?, ?, ?, ?);";
 
-    public static $INSERT_COURSE = "INSERT IGNORE INTO courses (subj_code, subj_name, crse_code, crse_name) VALUES (?, ?, ?, ?);";
+    /**
+     * @var string A query to insert a single course into the courses table
+     */
+    public static $INSERT_COURSE =
+        "INSERT INTO courses (subj_code, subj_name, crse_code, crse_name) "
+        . "VALUES (?, ?, ?, ?);";
 
-    public static $INSERT_INSTRUCTOR = "INSERT IGNORE INTO instructors (instr_xid, instr_fname, instr_lname) VALUES (?, ?, ?);";
+    /**
+     * @var string A query to insert a single instructor into the instructors table
+     */
+    public static $INSERT_INSTRUCTOR =
+        "INSERT INTO instructors (xid, fname, mname, lname) "
+        . "VALUES (?, ?, ?, ?);";
 
-    public static $INSERT_EVENT = "INSERT INTO events (event_title, event_time_start, event_time_end, term_code, crn_key, camp_code, bldg_code, room_code, subj_code, crse_code, instr_xid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    /**
+     * @var string A query to insert a single event into the events table
+     */
+    public static $INSERT_EVENT =
+        "INSERT INTO `events` (term_code, crn_key, time_start, time_end, title, camp_code, bldg_code, room_code, subj_code, crse_code, xid) "
+        . "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
-    public static $SELECT_CAMPUSES = "SELECT DISTINCT camp_code, camp_name FROM rooms WHERE true;";
+    /**
+     * @var string A query to select a list of available campuses
+     */
+    public static $SELECT_CAMPUSES =
+        "SELECT DISTINCT camp_code, camp_name FROM rooms "
+        . "WHERE true;";
 
-    public static $SELECT_BUILDINGS = "SELECT DISTINCT bldg_code, bldg_name FROM rooms WHERE camp_code=?;";
+    /**
+     * @var string A query to select a list of available buildings for a campus
+     */
+    public static $SELECT_BUILDINGS =
+        "SELECT DISTINCT bldg_code, bldg_name FROM rooms "
+        . "WHERE camp_code = ?;";
 
-    public static $SELECT_ROOMS = "SELECT DISTINCT room_code, room_name FROM rooms WHERE bldg_code=?;";
+    /**
+     * @var string A query to select a list of available rooms for a building
+     */
+    public static $SELECT_ROOMS =
+        "SELECT DISTINCT room_code, room_name FROM rooms "
+        . "WHERE camp_code = ? AND bldg_code = ?;";
 
-    public static $SELECT_INSTRUCTORS = "SELECT DISTINCT instr_xid, instr_fname, instr_lname FROM `instructors` WHERE true;";
+    /**
+     * @var string A query to select a list of available subjects
+     */
+    public static $SELECT_SUBJECTS =
+        "SELECT DISTINCT subj_code, subj_name FROM courses "
+        . "WHERE true;";
 
-    public static $SELECT_ROOM = "SELECT event_id, event_title, event_time_start, event_time_end, crn_key, camp_name, bldg_name, room_name FROM `events` e INNER JOIN rooms r ON e.camp_code = r.camp_code AND e.bldg_code = r.bldg_code AND e.room_code = r.room_code WHERE e.camp_code=? AND e.bldg_code=? AND e.room_code=?;";
+    /**
+     * @var string A query to select a list of available courses for a subject
+     */
+    public static $SELECT_COURSES =
+        "SELECT DISTINCT crse_code, crse_name FROM courses "
+	    . "WHERE subj_code = ?;";
 
-    public static $SELECT_COURSE = "SELECT * FROM `events` WHERE subj_code=? AND crse_code=?;";
+    /**
+     * @var string A query to select a list of available instructors
+     */
+    public static $SELECT_INSTRUCTORS =
+        "SELECT DISTINCT instr_xid, instr_fname, instr_lname FROM instructors "
+        . "WHERE true;";
 
-    public static $SELECT_SUBJECTS = "SELECT DISTINCT subj_code, subj_name FROM courses WHERE true;";
+    /**
+     * @var string A query to select a list of events given a specified range of time
+     *
+     * Provides all variables from all tables
+     * Returns DATETIME as UNIX timestamps
+     */
+    public static $SELECT_EVENTS_TIMES =
+        "SELECT e.term_code, e.crn_key, UNIX_TIMESTAMP(e.time_start), UNIX_TIMESTAMP(e.time_end), e.title, e.camp_code, r.camp_name, e.bldg_code, r.bldg_name, e.room_code, r.room_name, e.subj_code, c.subj_name, e.crse_code, c.crse_name, e.xid, i.fname, i.mname, i.lname FROM `events` e "
+        . "INNER JOIN rooms r ON e.camp_code = r.camp_code AND e.bldg_code = r.bldg_code AND e.room_code = r.room_code "
+        . "INNER JOIN courses c ON e.subj_code = c.subj_code AND e.crse_code = c.crse_code "
+        . "INNER JOIN instructors i ON e.xid = i.xid "
+        . "WHERE e.time_start >= ? AND e.time_end <= ?;";
 
-    public static $SELECT_COURSES = "SELECT DISTINCT crse_code, crse_name FROM courses WHERE subj_code=?;";
+    /**
+     * @var string A query to select a list of events given a specified room
+     *
+     * Provides all variables from all tables
+     * Returns DATETIME as UNIX timestamps
+     */
+    public static $SELECT_EVENTS_ROOMS =
+        "SELECT e.term_code, e.crn_key, UNIX_TIMESTAMP(e.time_start), UNIX_TIMESTAMP(e.time_end), e.title, e.camp_code, r.camp_name, e.bldg_code, r.bldg_name, e.room_code, r.room_name, e.subj_code, c.subj_name, e.crse_code, c.crse_name, e.xid, i.fname, i.mname, i.lname FROM `events` e "
+        . "INNER JOIN rooms r ON e.camp_code = r.camp_code AND e.bldg_code = r.bldg_code AND e.room_code = r.room_code "
+        . "INNER JOIN courses c ON e.subj_code = c.subj_code AND e.crse_code = c.crse_code "
+        . "INNER JOIN instructors i ON e.xid = i.xid "
+        . "WHERE e.camp_code = ? AND e.bldg_code = ? AND e.room_code = ?;";
 
-    public static $SEARCH_ROOMS_BY_TIME = "SELECT r.bldg_code, r.bldg_name, r.room_code, r.room_name FROM rooms r INNER JOIN events e ON r.room_code=e.room_code AND r.bldg_code=e.bldg_code AND r.camp_code=e.camp_code WHERE event_time_start >= ?;";
-
-    public static $SEARCH_ROOMBYTIME = "SELECT r.camp_code, r.camp_name, r.bldg_code, r.bldg_name, r.room_code, r.room_name, e.event_time_start, e.event_time_end FROM rooms r INNER JOIN events e ON r.camp_code = e.camp_code AND r.bldg_code = e.bldg_code AND r.room_code = e.room_code WHERE event_date = ? AND event_time_start >= ? AND (event_time_end IS NULL OR event_time_end <= ?);";
-
-    public static $SEARCH_ROOMBYCOURSE = "SELECT r.camp_code, r.camp_name, r.bldg_code, r.bldg_name, r.room_code, r.room_name, e.event_time_start, e.event_time_end FROM rooms r INNER JOIN events e ON r.camp_code = e.camp_code AND r.bldg_code = e.bldg_code AND r.room_code = e.room_code WHERE subj_code = ? AND crse_code = ?;";
-
-    public static $SEARCH_ROOMBYINSTRUCTOR = "SELECT r.camp_code, r.camp_name, r.bldg_code, r.bldg_name, r.room_code, r.room_name, e.event_time_start, e.event_time_end FROM rooms r INNER JOIN events e ON r.camp_code = e.camp_code AND r.bldg_code = e.bldg_code AND r.room_code = e.room_code WHERE instr_xid = ?";
-
-    public static $SEARCH_TIMEBYROOM = "SELECT e.event_id, e.event_title, e.event_date, e.event_time_start, e.event_time_end, e.term_code, e.crn_key, e.camp_code, r.camp_name, e.bldg_code, r.bldg_name, e.room_code, r.room_name, e.subj_code, c.subj_name, e.crse_code, c.crse_name, e.instr_xid, i.instr_fname, i.instr_lname FROM events e INNER JOIN rooms r ON e.camp_code=r.camp_code AND e.bldg_code = r.bldg_code AND e.room_code = r.room_code INNER JOIN courses c ON e.subj_code=c.subj_code AND e.crse_code=c.crse_code INNER JOIN instructors i ON e.instr_xid=i.instr_xid WHERE e.camp_code=? AND e.bldg_code=? AND e.room_code=?;";
-
-    public static $SEARCH_TIMEBYCOURSE = "";
-
-    public static $SEARCH_TIMEBYINSTRUCTOR = "";
+    /**
+     * @var string A query to select a list of events given a specified term and CRN
+     *
+     * Provides all variables from all tables
+     * Returns DATETIME as UNIX timestamps
+     */
+    public static $SELECT_EVENTS_CRNS =
+        "SELECT Ue.term_code, e.crn_key, UNIX_TIMESTAMP(e.time_start), UNIX_TIMESTAMP(e.time_end), e.title, e.camp_code, r.camp_name, e.bldg_code, r.bldg_name, e.room_code, r.room_name, e.subj_code, c.subj_name, e.crse_code, c.crse_name, e.xid, i.fname, i.mname, i.lname FROM `events` e "
+        . "INNER JOIN rooms r ON e.camp_code = r.camp_code AND e.bldg_code = r.bldg_code AND e.room_code = r.room_code "
+        . "INNER JOIN courses c ON e.subj_code = c.subj_code AND e.crse_code = c.crse_code "
+        . "INNER JOIN instructors i ON e.xid = i.xid "
+        . "WHERE e.term_code = ? AND e.crn_key = ?;";
 
 }
