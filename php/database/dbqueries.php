@@ -144,7 +144,7 @@ class DBQueries {
         . "INNER JOIN rooms r ON e.camp_code = r.camp_code AND e.bldg_code = r.bldg_code AND e.room_code = r.room_code "
         . "INNER JOIN courses c ON e.subj_code = c.subj_code AND e.crse_code = c.crse_code "
         . "INNER JOIN instructors i ON e.xid = i.xid "
-        . "WHERE e.time_start >= ? AND e.time_end <= ?;";
+        . "WHERE e.time_start >= ? AND (e.time_end <= ? OR 1 = 1);";
 
     /**
      * @var string A query to select a list of events given a specified room

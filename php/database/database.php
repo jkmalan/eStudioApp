@@ -22,8 +22,10 @@ class Database {
      * Opens the connection to the database
      */
     public static function connect() {
-        $dsn = "mysql:host=" . Config::$DB_HOST . ";port=" . Config::$DB_PORT
-            . ";dbname=" . Config::$DB_NAME . ";charset=" . Config::$DB_CHAR;
+        $dsn = "mysql:host=" . Config::$DB_HOST
+               . ";port=" . Config::$DB_PORT
+               . ";dbname=" . Config::$DB_NAME
+               . ";charset=" . Config::$DB_CHAR;
         try {
             self::$PDO = new PDO($dsn, Config::$DB_USER, Config::$DB_PASS);
             self::$PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

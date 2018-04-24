@@ -44,58 +44,82 @@ class DBHandler {
     /*
      * Adds a single event and relevant data to the database
      *
-     * Requires a header containing the column fields
-     * Requires an array containing the matching values
+     * @param $header Requires a header containing the column fields
+     * @param $row Requires an array containing the matching values
      */
     private static function insertEventByRow($header, $row) {
-        $fields = array();
+        $map = array();
         for ($i = 0; $i < count($header); $i++) {
-            $fields[$header[$i]] = $row[$i];
+            $map[$header[$i]] = $row[$i];
         }
 
+        /*
+         * Field names correspond to the column headers in the CSV
+         * Some values can be null or empty: rooms.room_name, instructors.mname, events.xid
+         */
         $db = Database::getDatabase();
         try {
 
-            /*
-             * Field names correspond to the column headers in the CSV
-             * Some values can be null or empty: room_name,
+            /* Inserts a location into the table by campus, building, and room
+             * On collision, it will update existing information with the new information
              */
             $stmtRoom = $db->prepare(DBQueries::$INSERT_ROOM);
-            $stmtRoom->bindParam(1, $fields['camp_code']);
-            $stmtRoom->bindParam(2, $fields['camp_name']);
-            $stmtRoom->bindParam(3, $fields['bldg_code']);
-            $stmtRoom->bindParam(4, $fields['bldg_name']);
-            $stmtRoom->bindParam(5, $fields['room_code']);
-            $stmtRoom->bindParam(6, $fields['room_name']);
+            $stmtRoom->bindParam(1, $map[Config::$DATA_MAP['camp_code']]);
+            $stmtRoom->bindParam(2, $map[Config::$DATA_MAP['camp_name']]);
+            $stmtRoom->bindParam(3, $map[Config::$DATA_MAP['bldg_code']]);
+            $stmtRoom->bindParam(4, $map[Config::$DATA_MAP['bldg_name']]);
+            $stmtRoom->bindParam(5, $map[Config::$DATA_MAP['room_code']]);
+            $room_name = $map[Config::$DATA_MAP['room_name']];
+            if ($room_name == NULL) {
+                $room_name = '';
+            }
+            $stmtRoom->bindParam(6, $room_name);
             $stmtRoom->execute();
 
+            /* Inserts a course into the table by subject and course
+             * On collision, it will update existing information with the new information
+             */
             $stmtCourse = $db->prepare(DBQueries::$INSERT_COURSE);
-            $stmtCourse->bindParam(1, $fields['subj_code']);
-            $stmtCourse->bindParam(2, $fields['subj_name']);
-            $stmtCourse->bindParam(3, $fields['crse_code']);
-            $stmtCourse->bindParam(4, $fields['crse_name']);
+            $stmtCourse->bindParam(1, $map[Config::$DATA_MAP['subj_code']]);
+            $stmtCourse->bindParam(2, $map[Config::$DATA_MAP['subj_name']]);
+            $stmtCourse->bindParam(3, $map[Config::$DATA_MAP['crse_code']]);
+            $stmtCourse->bindParam(4, $map[Config::$DATA_MAP['crse_name']]);
             $stmtCourse->execute();
 
+            /* Inserts an instructor into the table by xid and name
+             * On collision, it will update existing information with the new information
+             */
             $stmtInstructor = $db->prepare(DBQueries::$INSERT_INSTRUCTOR);
-            $stmtInstructor->bindParam(1, $fields['xid']);
-            $stmtInstructor->bindParam(2, $fields['fname']);
-            $stmtInstructor->bindParam(2, $fields['mname']);
-            $stmtInstructor->bindParam(3, $fields['lname']);
+            $stmtInstructor->bindParam(1, $map[Config::$DATA_MAP['xid']]);
+            $stmtInstructor->bindParam(2, $map[Config::$DATA_MAP['fname']]);
+            $mname = $map[Config::$DATA_MAP['mname']];
+            if ($mname == NULL) {
+                $mname = '';
+            }
+            $stmtInstructor->bindParam(3, $mname);
+            $stmtInstructor->bindParam(4, $map[Config::$DATA_MAP['lname']]);
             $stmtInstructor->execute();
 
+            /* Inserts an event into the table
+             * This should not collide, each has a unique compound key of term, CRN, and time
+             */
             $stmtEvent = $db->prepare(DBQueries::$INSERT_EVENT);
-            $stmtEvent->bindParam(1, $fields['eid']);
-            $stmtEvent->bindParam(2, $fields['title']);
-            $stmtEvent->bindParam(3, $fields['time_start']);
-            $stmtEvent->bindParam(4, $fields['time_end']);
-            $stmtEvent->bindParam(5, $fields['term_code']);
-            $stmtEvent->bindParam(6, $fields['crn_key']);
-            $stmtEvent->bindParam(7, $fields['camp_code']);
-            $stmtEvent->bindParam(8, $fields['bldg_code']);
-            $stmtEvent->bindParam(9, $fields['room_code']);
-            $stmtEvent->bindParam(10, $fields['subj_code']);
-            $stmtEvent->bindParam(11, $fields['crse_code']);
-            $stmtEvent->bindParam(12, $fields['xid']);
+            $stmtEvent->bindParam(1, $map[Config::$DATA_MAP['eid']]);
+            $stmtEvent->bindParam(2, $map[Config::$DATA_MAP['title']]);
+            $stmtEvent->bindParam(3, $map[Config::$DATA_MAP['time_start']]);
+            $stmtEvent->bindParam(4, $map[Config::$DATA_MAP['time_end']]);
+            $stmtEvent->bindParam(5, $map[Config::$DATA_MAP['term_code']]);
+            $stmtEvent->bindParam(6, $map[Config::$DATA_MAP['crn_key']]);
+            $stmtEvent->bindParam(7, $map[Config::$DATA_MAP['camp_code']]);
+            $stmtEvent->bindParam(8, $map[Config::$DATA_MAP['bldg_code']]);
+            $stmtEvent->bindParam(9, $map[Config::$DATA_MAP['room_code']]);
+            $stmtEvent->bindParam(10, $map[Config::$DATA_MAP['subj_code']]);
+            $stmtEvent->bindParam(11, $map[Config::$DATA_MAP['crse_code']]);
+            $xid = $map[Config::$DATA_MAP['$xid']];
+            if ($xid == NULL) {
+                $xid = '';
+            }
+            $stmtEvent->bindParam(12, $xid);
             $stmtEvent->execute();
 
         } catch (PDOException $ex) {
@@ -103,14 +127,16 @@ class DBHandler {
         }
     }
 
-    public static function searchRoomByTime($date, $time_start, $time_end = NULL) {
+    /**
+     * Retrieves a list of campuses with a code and name
+     *
+     * @return array|null A list of campuses
+     */
+    public static function getCampuses() {
         $db = Database::getDatabase();
         $results = NULL;
         try {
-            $stmt = $db->prepare(DBQueries::$SEARCH_ROOMBYTIME);
-            $stmt->bindParam(1, $date);
-            $stmt->bindParam(2, $time_start);
-            $stmt->bindParam(3,$time_end);
+            $stmt = $db->prepare(DBQueries::$SELECT_CAMPUSES);
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
@@ -120,246 +146,181 @@ class DBHandler {
         return $results;
     }
 
-    public static function searchRoomByCourse($subject, $course) {
-        $db = Database::getDatabase();
-        $results = NULL;
-        try {
-            $stmt = $db->prepare(DBQueries::$SEARCH_ROOMBYCOURSE);
-            $stmt->bindParam(1, $subject);
-            $stmt->bindParam(2, $course);
-            $stmt->execute();
-            $results = $stmt->fetchAll();
-        } catch (PDOException $ex) {
-            exit($ex->getMessage());
-        }
-
-        return $results;
-    }
-
-    public static function searchRoomsByInstructor($instructor) {
-        $db = Database::getDatabase();
-        $results = NULL;
-        try {
-            $stmt = $db->prepare(DBQueries::$SEARCH_ROOMBYINSTRUCTOR);
-            $stmt->bindParam(1, $instructor);
-            $stmt->execute();
-            $results = $stmt->fetchAll();
-        } catch (PDOException $ex) {
-            exit($ex->getMessage());
-        }
-
-        return $results;
-    }
-
-    public static function searchTimeByRoom($campus, $building, $room) {
-        $db = Database::getDatabase();
-        $results = NULL;
-        try {
-            $stmt = $db->prepare(DBQueries::$SEARCH_TIMEBYROOM);
-            $stmt->bindParam(1, $campus);
-            $stmt->bindParam(2, $building);
-            $stmt->bindParam(3, $room);
-            $stmt->execute();
-            $results = $stmt->fetchAll();
-        } catch (PDOException $ex) {
-            exit($ex->getMessage());
-        }
-
-        return $results;
-    }
-
-    public static function searchTimeByCourse($subject, $course) {
-        $db = Database::getDatabase();
-        $results = NULL;
-        try {
-            $stmt = $db->prepare(DBQueries::$SEARCH_TIMEBYCOURSE);
-            $stmt->bindParam(1, $subject);
-            $stmt->bindParam(2, $course);
-            $stmt->execute();
-            $results = $stmt->fetchAll();
-        } catch (PDOException $ex) {
-            exit($ex->getMessage());
-        }
-
-        return $results;
-    }
-
-    public static function searchTimeByInstructor($instructor) {
-        $db = Database::getDatabase();
-        $results = NULL;
-        try {
-            $stmt = $db->prepare(DBQueries::$SEARCH_TIMEBYINSTRUCTOR);
-            $stmt->bindParam(1, $instructor);
-            $stmt->execute();
-            $results = $stmt->fetchAll();
-        } catch (PDOException $ex) {
-            exit($ex->getMessage());
-        }
-
-        return $results;
-    }
-
-    /** SEPARATOR // SEPARATOR // SEPARATOR // SEPARATOR ///
-    ///                                                  ///
-    ///   \/\/\/  //      OLD METHODS       //   \/\/\/  ///
-    ///                                                  ///
-    /// SEPARATOR // SEPARATOR // SEPARATOR // SEPARATOR **/
-
-    public static function searchRooms($date, $time) {
-        $db = Database::getDatabase();
-        $results = NULL;
-        try {
-            $stmt = $db->prepare(DBQueries::$SEARCH_ROOMS_BY_TIME);
-            $stmt->bindParam(1, $time);
-            $stmt->execute();
-            $results = $stmt->fetchAll();
-        } catch (PDOException $ex) {
-            exit("Failed to query data: " . $ex->getMessage());
-        }
-
-        return $results;
-    }
-
-    public static function selectCampuses() {
-        $db = Database::getDatabase();
-        $results = NULL;
-        try {
-            $results = $db->query(DBQueries::$SELECT_CAMPUSES);
-        } catch (PDOException $ex) {
-            exit("Failed to query data: " . $ex->getMessage());
-        }
-
-        return $results;
-    }
-
-    public static function selectBuildings($camp) {
+    /**
+     * Retrieves a list of buildings with a code and name
+     *
+     * @param $camp_code
+     * @return array|null A list of buildings
+     */
+    public static function getBuildings($camp_code) {
         $db = Database::getDatabase();
         $results = NULL;
         try {
             $stmt = $db->prepare(DBQueries::$SELECT_BUILDINGS);
-            $stmt->bindParam(1,$camp);
+            $stmt->bindParam(1, $camp_code);
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-            exit("Failed to query data: " . $ex->getMessage());
+            exit($ex->getMessage());
         }
 
         return $results;
     }
 
-    public static function selectRooms($bldg) {
+    /**
+     * Retrieves a list of rooms with a code and name
+     *
+     * @param $camp_code
+     * @param $bldg_code
+     * @return array|null A list of rooms
+     */
+    public static function getRooms($camp_code, $bldg_code) {
         $db = Database::getDatabase();
         $results = NULL;
         try {
             $stmt = $db->prepare(DBQueries::$SELECT_ROOMS);
-            $stmt->bindParam(1,$bldg);
+            $stmt->bindParam(1, $camp_code);
+            $stmt->bindParam(2, $bldg_code);
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-            exit("Failed to query data: " . $ex->getMessage());
+            exit($ex->getMessage());
         }
 
         return $results;
     }
 
-    public static function selectSubjects() {
+    /**
+     * Retrieves a list of subjects with a code and name
+     *
+     * @return array|null A list of subjects
+     */
+    public static function getSubjects() {
         $db = Database::getDatabase();
         $results = NULL;
         try {
-            $results = $db->query(DBQueries::$SELECT_SUBJECTS);
+            $stmt = $db->prepare(DBQueries::$SELECT_SUBJECTS);
+            $stmt->execute();
+            $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-            exit("Failed to query data: " . $ex->getMessage());
+            exit($ex->getMessage());
         }
 
         return $results;
     }
 
-    public static function selectCourses($subj) {
+    /**
+     * Retrieves a list of courses with a code and name
+     *
+     * @param $subj_code
+     * @return array|null A list of courses
+     */
+    public static function getCourses($subj_code) {
         $db = Database::getDatabase();
         $results = NULL;
         try {
             $stmt = $db->prepare(DBQueries::$SELECT_COURSES);
-            $stmt->bindParam(1,$subj);
+            $stmt->bindParam(1, $subj_code);
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-            exit("Failed to query data: " . $ex->getMessage());
+            exit($ex->getMessage());
         }
 
         return $results;
     }
 
-    public static function selectProfessors() {
+    /**
+     * Retrieves a list of instructors with a code and name
+     *
+     * @return array|null A list of instructors
+     */
+    public static function getInstructors() {
         $db = Database::getDatabase();
         $results = NULL;
         try {
-            $results = $db->query(DBQueries::$SELECT_INSTRUCTORS);
+            $stmt = $db->prepare(DBQueries::$SELECT_INSTRUCTORS);
+            $stmt->execute();
+            $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-            exit("Failed to query data: " . $ex->getMessage());
+            exit($ex->getMessage());
         }
 
         return $results;
     }
 
     /**
-     * Retrieves events data using a specified room
+     * Searches for events given a specified range of time
+     * If missing an end time, will search without and end point
      *
-     * @param $campus
-     * @param $building
-     * @param $room
-     * @return array of events
+     * @param $time_start
+     * @param $time_end
+     * @return array|null A list of events
      */
-    public static function selectRoom($campus, $building, $room) {
+    public static function searchEventsByTime($time_start, $time_end = '') {
         $db = Database::getDatabase();
         $results = NULL;
         try {
-            $stmt = $db->prepare(DBQueries::$SELECT_ROOM);
-            $stmt->bindParam(1, $campus);
-            $stmt->bindParam(2, $building);
-            $stmt->bindParam(3, $room);
+            $stmt = $db->prepare(DBQueries::$SELECT_EVENTS_TIMES);
+            $stmt->bindParam(1, $time_start);
+            $stmt->bindParam(2,$time_end);
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-            exit("Failed to insert or update row: " . $ex->getMessage());
+            exit($ex->getMessage());
         }
 
         return $results;
     }
 
     /**
-     * Retrieves data using a specified course
+     * Searches for events given a specified room
+     * Requires a campus, building, and room to be provided
      *
-     * @param $subject
-     * @param $course
+     * @param $camp_code
+     * @param $bldg_code
+     * @param $room_code
+     * @return array|null A list of events
      */
-    public static function selectCourse($subject, $course) {
+    public static function searchEventsByRoom($camp_code, $bldg_code, $room_code) {
         $db = Database::getDatabase();
+        $results = NULL;
         try {
-            $stmt = $db->prepare(DBQueries::$SELECT_COURSE);
-            $stmt->bindParam(1, $subject);
-            $stmt->bindParam(2, $course);
+            $stmt = $db->prepare(DBQueries::$SELECT_EVENTS_ROOMS);
+            $stmt->bindParam(1, $camp_code);
+            $stmt->bindParam(2, $bldg_code);
+            $stmt->bindParam(3, $room_code);
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-            exit("Failed to insert or update row: " . $ex->getMessage());
+            exit($ex->getMessage());
         }
+
+        return $results;
     }
 
     /**
-     * Retrieves data using a specified instructor
+     * Searches for events given a specified term and CRN
+     * Requires a term code and CRN to be provided
      *
-     * @param $xid
+     * @param $term_code
+     * @param $crn_key
+     * @return array|null A list of events
      */
-    public static function selectInstructor($xid) {
+    public static function searchEventsByCRN($term_code, $crn_key) {
         $db = Database::getDatabase();
+        $results = NULL;
         try {
-            $stmt = $db->prepare(DBQueries::$SELECT_ROOM);
-            $stmt->bindParam(1, $xid);
+            $stmt = $db->prepare(DBQueries::$SELECT_EVENTS_CRNS);
+            $stmt->bindParam(1, $term_code);
+            $stmt->bindParam(2, $crn_key);
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-            exit("Failed to insert or update row: " . $ex->getMessage());
+            exit($ex->getMessage());
         }
+
+        return $results;
     }
 
 }
