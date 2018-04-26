@@ -25,7 +25,7 @@ class DBQueries {
             . "bldg_code CHAR(8) NOT NULL,"
             . "bldg_name CHAR(32) NOT NULL,"
             . "room_code CHAR(8) NOT NULL,"
-            . "room_desc CHAR(32),"
+            . "room_name CHAR(32),"
             . "PRIMARY KEY (camp_code, bldg_code, room_code));",
 
         "CREATE_COURSES" =>
@@ -68,28 +68,32 @@ class DBQueries {
      */
     public static $INSERT_ROOM =
         "INSERT INTO rooms (camp_code, camp_name, bldg_code, bldg_name, room_code, room_name) "
-        . "VALUES (?, ?, ?, ?, ?, ?);";
+        . "VALUES (?, ?, ?, ?, ?, ?) "
+        . "ON DUPLICATE KEY UPDATE camp_code = camp_code;";
 
     /**
      * @var string A query to insert a single course into the courses table
      */
     public static $INSERT_COURSE =
         "INSERT INTO courses (subj_code, subj_name, crse_code, crse_name) "
-        . "VALUES (?, ?, ?, ?);";
+        . "VALUES (?, ?, ?, ?) "
+        . "ON DUPLICATE KEY UPDATE subj_code = subj_code;";
 
     /**
      * @var string A query to insert a single instructor into the instructors table
      */
     public static $INSERT_INSTRUCTOR =
         "INSERT INTO instructors (xid, fname, mname, lname) "
-        . "VALUES (?, ?, ?, ?);";
+        . "VALUES (?, ?, ?, ?) "
+        . "ON DUPLICATE KEY UPDATE xid = xid;";
 
     /**
      * @var string A query to insert a single event into the events table
      */
     public static $INSERT_EVENT =
         "INSERT INTO `events` (term_code, crn_key, time_start, time_end, title, camp_code, bldg_code, room_code, subj_code, crse_code, xid) "
-        . "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        . "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+        . "ON DUPLICATE KEY UPDATE crn_key = crn_key";
 
     /**
      * @var string A query to select a list of available campuses
@@ -110,7 +114,7 @@ class DBQueries {
      */
     public static $SELECT_ROOMS =
         "SELECT DISTINCT room_code, room_name FROM rooms "
-        . "WHERE camp_code = ? AND bldg_code = ?;";
+        . "WHERE bldg_code = ?;";
 
     /**
      * @var string A query to select a list of available subjects
@@ -140,11 +144,12 @@ class DBQueries {
      * Returns DATETIME as UNIX timestamps
      */
     public static $SELECT_EVENTS_TIMES =
-        "SELECT e.term_code, e.crn_key, UNIX_TIMESTAMP(e.time_start), UNIX_TIMESTAMP(e.time_end), e.title, e.camp_code, r.camp_name, e.bldg_code, r.bldg_name, e.room_code, r.room_name, e.subj_code, c.subj_name, e.crse_code, c.crse_name, e.xid, i.fname, i.mname, i.lname FROM `events` e "
+        "SELECT e.term_code, e.crn_key, e.time_start, e.time_end, e.title, e.camp_code, r.camp_name, e.bldg_code, r.bldg_name, e.room_code, r.room_name, e.subj_code, c.subj_name, e.crse_code, c.crse_name, e.xid, i.fname, i.mname, i.lname FROM `events` e "
         . "INNER JOIN rooms r ON e.camp_code = r.camp_code AND e.bldg_code = r.bldg_code AND e.room_code = r.room_code "
         . "INNER JOIN courses c ON e.subj_code = c.subj_code AND e.crse_code = c.crse_code "
         . "INNER JOIN instructors i ON e.xid = i.xid "
-        . "WHERE e.time_start >= ? AND (e.time_end <= ? OR 1 = 1);";
+        . "WHERE e.time_start >= ? AND e.time_end <= ? "
+        . "ORDER BY room_name ASC;";
 
     /**
      * @var string A query to select a list of events given a specified room
@@ -153,11 +158,12 @@ class DBQueries {
      * Returns DATETIME as UNIX timestamps
      */
     public static $SELECT_EVENTS_ROOMS =
-        "SELECT e.term_code, e.crn_key, UNIX_TIMESTAMP(e.time_start), UNIX_TIMESTAMP(e.time_end), e.title, e.camp_code, r.camp_name, e.bldg_code, r.bldg_name, e.room_code, r.room_name, e.subj_code, c.subj_name, e.crse_code, c.crse_name, e.xid, i.fname, i.mname, i.lname FROM `events` e "
+        "SELECT e.term_code, e.crn_key, e.time_start, e.time_end, e.title, e.camp_code, r.camp_name, e.bldg_code, r.bldg_name, e.room_code, r.room_name, e.subj_code, c.subj_name, e.crse_code, c.crse_name, e.xid, i.fname, i.mname, i.lname FROM `events` e "
         . "INNER JOIN rooms r ON e.camp_code = r.camp_code AND e.bldg_code = r.bldg_code AND e.room_code = r.room_code "
         . "INNER JOIN courses c ON e.subj_code = c.subj_code AND e.crse_code = c.crse_code "
         . "INNER JOIN instructors i ON e.xid = i.xid "
-        . "WHERE e.camp_code = ? AND e.bldg_code = ? AND e.room_code = ?;";
+        . "WHERE e.camp_code = ? AND e.bldg_code = ? AND e.room_code = ? "
+        . "ORDER BY time_start ASC;";
 
     /**
      * @var string A query to select a list of events given a specified term and CRN
@@ -166,10 +172,11 @@ class DBQueries {
      * Returns DATETIME as UNIX timestamps
      */
     public static $SELECT_EVENTS_CRNS =
-        "SELECT Ue.term_code, e.crn_key, UNIX_TIMESTAMP(e.time_start), UNIX_TIMESTAMP(e.time_end), e.title, e.camp_code, r.camp_name, e.bldg_code, r.bldg_name, e.room_code, r.room_name, e.subj_code, c.subj_name, e.crse_code, c.crse_name, e.xid, i.fname, i.mname, i.lname FROM `events` e "
+        "SELECT e.term_code, e.crn_key, e.time_start, e.time_end, e.title, e.camp_code, r.camp_name, e.bldg_code, r.bldg_name, e.room_code, r.room_name, e.subj_code, c.subj_name, e.crse_code, c.crse_name, e.xid, i.fname, i.mname, i.lname FROM `events` e "
         . "INNER JOIN rooms r ON e.camp_code = r.camp_code AND e.bldg_code = r.bldg_code AND e.room_code = r.room_code "
         . "INNER JOIN courses c ON e.subj_code = c.subj_code AND e.crse_code = c.crse_code "
         . "INNER JOIN instructors i ON e.xid = i.xid "
-        . "WHERE e.term_code = ? AND e.crn_key = ?;";
+        . "WHERE e.term_code = ? AND e.crn_key = ? "
+        . "ORDER BY room_code ASC, time_start ASC;";
 
 }

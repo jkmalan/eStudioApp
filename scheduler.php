@@ -79,6 +79,12 @@ $page_title = "Scheduler";
                                 <input class="form-control" type="time" name="time-input" value="">
                             </div>
                         </div>
+                        <div class="form-group col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
+                            <label for="datetime-input">Select Time</label>
+                            <div>
+                                <input class="form-control" type="datetime-local" name="datetime-input" value="">
+                            </div>
+                        </div>
                     </div>
                     <div class="row" id="search-courses">
                         <div class="form-group col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">

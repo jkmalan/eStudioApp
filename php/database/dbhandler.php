@@ -23,7 +23,7 @@ class DBHandler {
                 $db->exec($table);
             }
         } catch (PDOException $ex) {
-            exit($ex->getMessage());
+            exit($ex->getTraceAsString() . "<br>" . $ex->getMessage());
         }
     }
 
@@ -69,9 +69,9 @@ class DBHandler {
             $stmtRoom->bindParam(3, $map[Config::$DATA_MAP['bldg_code']]);
             $stmtRoom->bindParam(4, $map[Config::$DATA_MAP['bldg_name']]);
             $stmtRoom->bindParam(5, $map[Config::$DATA_MAP['room_code']]);
-            $room_name = $map[Config::$DATA_MAP['room_name']];
-            if ($room_name == NULL) {
-                $room_name = '';
+            $room_name = '';
+            if (isset($map[Config::$DATA_MAP['room_name']]) && $map[Config::$DATA_MAP['room_name']] != NULL) {
+                $room_name = $map[Config::$DATA_MAP['room_name']];
             }
             $stmtRoom->bindParam(6, $room_name);
             $stmtRoom->execute();
@@ -92,9 +92,9 @@ class DBHandler {
             $stmtInstructor = $db->prepare(DBQueries::$INSERT_INSTRUCTOR);
             $stmtInstructor->bindParam(1, $map[Config::$DATA_MAP['xid']]);
             $stmtInstructor->bindParam(2, $map[Config::$DATA_MAP['fname']]);
-            $mname = $map[Config::$DATA_MAP['mname']];
-            if ($mname == NULL) {
-                $mname = '';
+            $mname = '';
+            if (isset($map[Config::$DATA_MAP['mname']]) && $map[Config::$DATA_MAP['mname']]!= NULL) {
+                $mname = $map[Config::$DATA_MAP['mname']];
             }
             $stmtInstructor->bindParam(3, $mname);
             $stmtInstructor->bindParam(4, $map[Config::$DATA_MAP['lname']]);
@@ -104,26 +104,25 @@ class DBHandler {
              * This should not collide, each has a unique compound key of term, CRN, and time
              */
             $stmtEvent = $db->prepare(DBQueries::$INSERT_EVENT);
-            $stmtEvent->bindParam(1, $map[Config::$DATA_MAP['eid']]);
-            $stmtEvent->bindParam(2, $map[Config::$DATA_MAP['title']]);
+            $stmtEvent->bindParam(1, $map[Config::$DATA_MAP['term_code']]);
+            $stmtEvent->bindParam(2, $map[Config::$DATA_MAP['crn_key']]);
             $stmtEvent->bindParam(3, $map[Config::$DATA_MAP['time_start']]);
             $stmtEvent->bindParam(4, $map[Config::$DATA_MAP['time_end']]);
-            $stmtEvent->bindParam(5, $map[Config::$DATA_MAP['term_code']]);
-            $stmtEvent->bindParam(6, $map[Config::$DATA_MAP['crn_key']]);
-            $stmtEvent->bindParam(7, $map[Config::$DATA_MAP['camp_code']]);
-            $stmtEvent->bindParam(8, $map[Config::$DATA_MAP['bldg_code']]);
-            $stmtEvent->bindParam(9, $map[Config::$DATA_MAP['room_code']]);
-            $stmtEvent->bindParam(10, $map[Config::$DATA_MAP['subj_code']]);
-            $stmtEvent->bindParam(11, $map[Config::$DATA_MAP['crse_code']]);
-            $xid = $map[Config::$DATA_MAP['$xid']];
-            if ($xid == NULL) {
-                $xid = '';
+            $stmtEvent->bindParam(5, $map[Config::$DATA_MAP['title']]);
+            $stmtEvent->bindParam(6, $map[Config::$DATA_MAP['camp_code']]);
+            $stmtEvent->bindParam(7, $map[Config::$DATA_MAP['bldg_code']]);
+            $stmtEvent->bindParam(8, $map[Config::$DATA_MAP['room_code']]);
+            $stmtEvent->bindParam(9, $map[Config::$DATA_MAP['subj_code']]);
+            $stmtEvent->bindParam(10, $map[Config::$DATA_MAP['crse_code']]);
+            $xid = '';
+            if (isset($map[Config::$DATA_MAP['xid']]) && $map[Config::$DATA_MAP['xid']] != NULL) {
+                $xid = $map[Config::$DATA_MAP['xid']];
             }
-            $stmtEvent->bindParam(12, $xid);
+            $stmtEvent->bindParam(11, $xid);
             $stmtEvent->execute();
 
         } catch (PDOException $ex) {
-            exit($ex->getMessage());
+            exit($ex->getTraceAsString() . "<br>" . $ex->getMessage());
         }
     }
 
@@ -140,7 +139,7 @@ class DBHandler {
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-            exit($ex->getMessage());
+            exit($ex->getTraceAsString() . "<br>" . $ex->getMessage());
         }
 
         return $results;
@@ -161,7 +160,7 @@ class DBHandler {
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-            exit($ex->getMessage());
+            exit($ex->getTraceAsString() . "<br>" . $ex->getMessage());
         }
 
         return $results;
@@ -170,21 +169,19 @@ class DBHandler {
     /**
      * Retrieves a list of rooms with a code and name
      *
-     * @param $camp_code
      * @param $bldg_code
      * @return array|null A list of rooms
      */
-    public static function getRooms($camp_code, $bldg_code) {
+    public static function getRooms($bldg_code) {
         $db = Database::getDatabase();
         $results = NULL;
         try {
             $stmt = $db->prepare(DBQueries::$SELECT_ROOMS);
-            $stmt->bindParam(1, $camp_code);
-            $stmt->bindParam(2, $bldg_code);
+            $stmt->bindParam(1, $bldg_code);
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-            exit($ex->getMessage());
+            exit($ex->getTraceAsString() . "<br>" . $ex->getMessage());
         }
 
         return $results;
@@ -203,7 +200,7 @@ class DBHandler {
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-            exit($ex->getMessage());
+            exit($ex->getTraceAsString() . "<br>" . $ex->getMessage());
         }
 
         return $results;
@@ -224,7 +221,7 @@ class DBHandler {
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-            exit($ex->getMessage());
+            exit($ex->getTraceAsString() . "<br>" . $ex->getMessage());
         }
 
         return $results;
@@ -243,7 +240,7 @@ class DBHandler {
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-            exit($ex->getMessage());
+            exit($ex->getTraceAsString() . "<br>" . $ex->getMessage());
         }
 
         return $results;
@@ -267,7 +264,7 @@ class DBHandler {
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-            exit($ex->getMessage());
+            exit($ex->getTraceAsString() . "<br>" . $ex->getMessage());
         }
 
         return $results;
@@ -293,7 +290,7 @@ class DBHandler {
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-            exit($ex->getMessage());
+            exit($ex->getTraceAsString() . "<br>" . $ex->getMessage());
         }
 
         return $results;
@@ -317,7 +314,7 @@ class DBHandler {
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {
-            exit($ex->getMessage());
+            exit($ex->getTraceAsString() . "<br>" . $ex->getMessage());
         }
 
         return $results;

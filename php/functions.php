@@ -11,7 +11,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/php/initialize.php";
 $function_type = filter_input(INPUT_GET, 'ftype');
 
 if ($function_type === "camp") {
-    $campuses = DBHandler::selectCampuses();
+    $campuses = DBHandler::getCampuses();
     echo "<option value='' selected disabled>Choose a campus...</option>";
     foreach ($campuses as $camp) {
         echo "<option value='" . $camp['camp_code'] . "'>" . $camp['camp_name'] . "</option>";
@@ -20,7 +20,7 @@ if ($function_type === "camp") {
 
 if ($function_type === "bldg") {
     $campus = filter_input(INPUT_GET, 'campus');
-    $buildings = DBHandler::selectBuildings($campus);
+    $buildings = DBHandler::getBuildings($campus);
     echo "<option value='' selected disabled>Choose a building...</option>";
     foreach ($buildings as $bldg) {
         echo "<option value='" . $bldg['bldg_code'] . "'>" . $bldg['bldg_name'] . "</option>";
@@ -29,7 +29,7 @@ if ($function_type === "bldg") {
 
 if ($function_type === "room") {
     $building = filter_input(INPUT_GET, 'building');
-    $rooms = DBHandler::selectRooms($building);
+    $rooms = DBHandler::getRooms($building);
     echo "<option value='' selected disabled>Choose a room...</option>";
     foreach ($rooms as $room) {
         echo "<option value='" . $room['room_code'] . "'>" . $room['room_name'] . "</option>";
@@ -37,7 +37,7 @@ if ($function_type === "room") {
 }
 
 if ($function_type === "subj") {
-    $subjects = DBHandler::selectSubjects();
+    $subjects = DBHandler::getSubjects();
     echo "<option value='' selected disabled>Choose a subject...</option>";
     foreach ($subjects as $subj) {
         echo "<option value='" . $subj['subj_code'] . "'>" . $subj['subj_name'] . "</option>";
@@ -46,30 +46,43 @@ if ($function_type === "subj") {
 
 if ($function_type === "crse") {
     $subject = filter_input(INPUT_GET, 'subject');
-    $courses = DBHandler::selectCourses($subject);
+    $courses = DBHandler::getCourses($subject);
     echo "<option value='' selected disabled>Choose a course...</option>";
     foreach ($courses as $crse) {
         echo "<option value='" . $crse['crse_code'] . "'>" . $crse['crse_name'] . "</option>";
     }
 }
 
-if ($function_type === "roomEvents") {
+if ($function_type === "searchEBR") {
     $camp = filter_input(INPUT_GET, 'camp');
     $bldg = filter_input(INPUT_GET, 'bldg');
     $room = filter_input(INPUT_GET, 'room');
-    $events = DBHandler::selectRoom($camp, $bldg, $room);
+    $events = DBHandler::searchEventsByRoom($camp, $bldg, $room);
     $results = array();
     foreach ($events as $event) {
-        $results[] = array(
-            'id' => $event['event_id'],
-            'title' => $event['event_title'],
-            'crn' => $event['crn_key'],
-            'camp' => $event['camp_name'],
-            'bldg' => $event['bldg_name'],
-            'room' => $event['room_name'],
-            'start' => strtotime(new DateTime($event['event_time_start'] . " " . $event['event_date']))*1000,
-            'end' => strtotime(new DateTime($event['event_time_end'] . " " . $event['event_date']))*1000
-        );
+        echo "<p>";
+        echo $event['title'] . "<br>";
+        echo $event['term_code'] . " : " . $event['crn_key'] . "<br>";
+        echo $event['room_name'] . "-" . $event['bldg_name']  . "-" . $event['room_name'] .   "<br>";
+        echo $event['xid'] . ": " . $event['fname']  . " " . $event['lname'] . "<br>";
+        echo $event['time_start'] . "<br>";
+        echo $event['time_end'] . "</p>";
+    }
+}
+
+if ($function_type === "searchEBT") {
+    $time_start = filter_input(INPUT_GET, 'time_start');
+    $time_end = filter_input(INPUT_GET, 'time_end');
+    $events = DBHandler::searchEventsByTime($time_start, $time_end);
+    $results = array();
+    foreach ($events as $event) {
+        echo "<p>";
+        echo $event['title'] . "<br>";
+        echo $event['term_code'] . " : " . $event['crn_key'] . "<br>";
+        echo $event['room_name'] . "-" . $event['bldg_name']  . "-" . $event['room_name'] .   "<br>";
+        echo $event['xid'] . ": " . $event['fname']  . " " . $event['lname'] . "<br>";
+        echo $event['time_start'] . "<br>";
+        echo $event['time_end'] . "</p>";
     }
 }
 
