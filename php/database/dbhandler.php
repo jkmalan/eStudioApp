@@ -100,6 +100,14 @@ class DBHandler {
             $stmtInstructor->bindParam(4, $map[Config::$DATA_MAP['lname']]);
             $stmtInstructor->execute();
 
+            /* Inserts a term into the table by term
+             * On collision, it will update existing information with the new information
+             */
+            $stmtTerm = $db->prepare(DBQueries::$INSERT_TERM);
+            $stmtTerm->bindParam(1, $map[Config::$DATA_MAP['term_code']]);
+            $stmtTerm->bindParam(2, $map[Config::$DATA_MAP['term_name']]);
+            $stmtTerm->execute();
+
             /* Inserts an event into the table
              * This should not collide, each has a unique compound key of term, CRN, and time
              */
@@ -237,6 +245,25 @@ class DBHandler {
         $results = NULL;
         try {
             $stmt = $db->prepare(DBQueries::$SELECT_INSTRUCTORS);
+            $stmt->execute();
+            $results = $stmt->fetchAll();
+        } catch (PDOException $ex) {
+            exit($ex->getTraceAsString() . "<br>" . $ex->getMessage());
+        }
+
+        return $results;
+    }
+
+    /**
+     * Retrieves a list of terms with a code
+     *
+     * @return array|null A list of terms
+     */
+    public static function getTerms() {
+        $db = Database::getDatabase();
+        $results = NULL;
+        try {
+            $stmt = $db->prepare(DBQueries::$SELECT_TERMS);
             $stmt->execute();
             $results = $stmt->fetchAll();
         } catch (PDOException $ex) {

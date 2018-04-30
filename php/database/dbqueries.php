@@ -44,6 +44,12 @@ class DBQueries {
             . "lname CHAR(32) NOT NULL,"
             . "PRIMARY KEY (xid));",
 
+        "CREATE_TERMS" =>
+            "CREATE TABLE IF NOT EXISTS terms ("
+            . "term_code INT NOT NULL,"
+            . "term_name CHAR(32) NOT NULL,"
+            . "PRIMARY KEY (term_code));",
+
         "CREATE_EVENTS" =>
             "CREATE TABLE IF NOT EXISTS `events` ("
             . "term_code INT NOT NULL,"
@@ -58,6 +64,7 @@ class DBQueries {
             . "crse_code CHAR(8) NOT NULL,"
             . "xid CHAR(9),"
             . "PRIMARY KEY (term_code, crn_key, time_start),"
+            . "FOREIGN KEY (term_code) REFERENCES terms(term_code),"
             . "FOREIGN KEY (camp_code, bldg_code, room_code) REFERENCES rooms(camp_code, bldg_code, room_code),"
             . "FOREIGN KEY (subj_code, crse_code) REFERENCES courses(subj_code, crse_code),"
             . "FOREIGN KEY (xid) REFERENCES instructors(xid));"
@@ -86,6 +93,14 @@ class DBQueries {
         "INSERT INTO instructors (xid, fname, mname, lname) "
         . "VALUES (?, ?, ?, ?) "
         . "ON DUPLICATE KEY UPDATE xid = xid;";
+
+    /**
+     * @var string A query to insert a single term into the terms table
+     */
+    public static $INSERT_TERM =
+        "INSERT INTO terms (term_code, term_name) "
+        . "VALUES (?, ?) "
+        . "ON DUPLICATE KEY UPDATE term_code = term_code;";
 
     /**
      * @var string A query to insert a single event into the events table
@@ -134,7 +149,14 @@ class DBQueries {
      * @var string A query to select a list of available instructors
      */
     public static $SELECT_INSTRUCTORS =
-        "SELECT DISTINCT instr_xid, instr_fname, instr_lname FROM instructors "
+        "SELECT DISTINCT xid, fname, lname FROM instructors "
+        . "WHERE true;";
+
+    /**
+     * @var string A query to select a list of available terms
+     */
+    public static $SELECT_TERMS =
+        "SELECT DISTINCT term_code, term_name FROM terms "
         . "WHERE true;";
 
     /**
@@ -144,10 +166,11 @@ class DBQueries {
      * Returns DATETIME as UNIX timestamps
      */
     public static $SELECT_EVENTS_TIMES =
-        "SELECT e.term_code, e.crn_key, e.time_start, e.time_end, e.title, e.camp_code, r.camp_name, e.bldg_code, r.bldg_name, e.room_code, r.room_name, e.subj_code, c.subj_name, e.crse_code, c.crse_name, e.xid, i.fname, i.mname, i.lname FROM `events` e "
+        "SELECT e.term_code, t.term_name, e.crn_key, e.time_start, e.time_end, e.title, e.camp_code, r.camp_name, e.bldg_code, r.bldg_name, e.room_code, r.room_name, e.subj_code, c.subj_name, e.crse_code, c.crse_name, e.xid, i.fname, i.mname, i.lname FROM `events` e "
         . "INNER JOIN rooms r ON e.camp_code = r.camp_code AND e.bldg_code = r.bldg_code AND e.room_code = r.room_code "
         . "INNER JOIN courses c ON e.subj_code = c.subj_code AND e.crse_code = c.crse_code "
         . "INNER JOIN instructors i ON e.xid = i.xid "
+        . "INNER JOIN terms t ON e.term_code = t.term_code "
         . "WHERE e.time_start >= ? AND e.time_end <= ? "
         . "ORDER BY room_name ASC;";
 
@@ -158,10 +181,11 @@ class DBQueries {
      * Returns DATETIME as UNIX timestamps
      */
     public static $SELECT_EVENTS_ROOMS =
-        "SELECT e.term_code, e.crn_key, e.time_start, e.time_end, e.title, e.camp_code, r.camp_name, e.bldg_code, r.bldg_name, e.room_code, r.room_name, e.subj_code, c.subj_name, e.crse_code, c.crse_name, e.xid, i.fname, i.mname, i.lname FROM `events` e "
+        "SELECT e.term_code, t.term_name, e.crn_key, e.time_start, e.time_end, e.title, e.camp_code, r.camp_name, e.bldg_code, r.bldg_name, e.room_code, r.room_name, e.subj_code, c.subj_name, e.crse_code, c.crse_name, e.xid, i.fname, i.mname, i.lname FROM `events` e "
         . "INNER JOIN rooms r ON e.camp_code = r.camp_code AND e.bldg_code = r.bldg_code AND e.room_code = r.room_code "
         . "INNER JOIN courses c ON e.subj_code = c.subj_code AND e.crse_code = c.crse_code "
         . "INNER JOIN instructors i ON e.xid = i.xid "
+        . "INNER JOIN terms t ON e.term_code = t.term_code "
         . "WHERE e.camp_code = ? AND e.bldg_code = ? AND e.room_code = ? "
         . "ORDER BY time_start ASC;";
 
@@ -172,10 +196,11 @@ class DBQueries {
      * Returns DATETIME as UNIX timestamps
      */
     public static $SELECT_EVENTS_CRNS =
-        "SELECT e.term_code, e.crn_key, e.time_start, e.time_end, e.title, e.camp_code, r.camp_name, e.bldg_code, r.bldg_name, e.room_code, r.room_name, e.subj_code, c.subj_name, e.crse_code, c.crse_name, e.xid, i.fname, i.mname, i.lname FROM `events` e "
+        "SELECT e.term_code, t.term_name, e.crn_key, e.time_start, e.time_end, e.title, e.camp_code, r.camp_name, e.bldg_code, r.bldg_name, e.room_code, r.room_name, e.subj_code, c.subj_name, e.crse_code, c.crse_name, e.xid, i.fname, i.mname, i.lname FROM `events` e "
         . "INNER JOIN rooms r ON e.camp_code = r.camp_code AND e.bldg_code = r.bldg_code AND e.room_code = r.room_code "
         . "INNER JOIN courses c ON e.subj_code = c.subj_code AND e.crse_code = c.crse_code "
         . "INNER JOIN instructors i ON e.xid = i.xid "
+        . "INNER JOIN terms t ON e.term_code = t.term_code "
         . "WHERE e.term_code = ? AND e.crn_key = ? "
         . "ORDER BY room_code ASC, time_start ASC;";
 

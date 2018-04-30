@@ -11,13 +11,9 @@ require_once './php/initialize.php';
 $page_style = "scheduler.css";
 $page_title = "Scheduler";
 
-
 $date = $time = "";
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
-    $date = filter_input(INPUT_GET, 'date');
-    $time = filter_input(INPUT_GET, 'time');
 
-    $rooms = DBHandler::searchRooms($date, $time);
 }
 
 ?>
@@ -31,11 +27,14 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
 <main>
     <div class="container">
-        <?php
-        foreach ($rooms as $room) {
-            echo $room['bldg_name'] . " Room " . $room['room_name'];
-        }
-        ?>
+        <div class="panel panel-default">
+            <div class="panel-heading text-center">
+                <span>Time Search<span>
+            </div>
+            <div class="panel-body">
+
+            </div>
+        </div>
     </div>
 </main>
 

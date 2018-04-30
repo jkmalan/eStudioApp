@@ -86,6 +86,22 @@ if ($function_type === "searchEBT") {
     }
 }
 
+if ($function_type === "searchEBC") {
+    $term_code = filter_input(INPUT_GET, 'term');
+    $crn_key = filter_input(INPUT_GET, 'crn');
+    $events = DBHandler::searchEventsByCRN($term_code, $crn_key);
+    $results = array();
+    foreach ($events as $event) {
+        echo "<p>";
+        echo $event['title'] . "<br>";
+        echo $event['term_code'] . " : " . $event['crn_key'] . "<br>";
+        echo $event['room_name'] . "-" . $event['bldg_name']  . "-" . $event['room_name'] .   "<br>";
+        echo $event['xid'] . ": " . $event['fname']  . " " . $event['lname'] . "<br>";
+        echo $event['time_start'] . "<br>";
+        echo $event['time_end'] . "</p>";
+    }
+}
+
 function validate($string) {
     $string = trim($string);
     $string = stripslashes($string);

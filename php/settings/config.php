@@ -61,12 +61,13 @@ class Config {
         "fname"      => "instr_fname",
         "mname"      => "instr_mname",
         "lname"      => "instr_lname",
+        "term_code"  => "term_code",
+        "term_name"  => "term_name",
         "eid"        => "event_id",
+        "crn_key"    => "crn_key",
         "title"      => "event_title",
         "time_start" => "event_time_start",
-        "time_end"   => "event_time_end",
-        "term_code"  => "term_code",
-        "crn_key"    => "crn_key"
+        "time_end"   => "event_time_end"
     );
 
 }
