@@ -57,17 +57,16 @@ class Config {
         "subj_name"  => "subj_name",
         "crse_code"  => "crse_code",
         "crse_name"  => "crse_name",
-        "xid"        => "instr_xid",
-        "fname"      => "instr_fname",
-        "mname"      => "instr_mname",
-        "lname"      => "instr_lname",
+        "xid"        => "xid",
+        "fname"      => "fname",
+        "mname"      => "mname",
+        "lname"      => "lname",
         "term_code"  => "term_code",
         "term_name"  => "term_name",
-        "eid"        => "event_id",
         "crn_key"    => "crn_key",
-        "title"      => "event_title",
-        "time_start" => "event_time_start",
-        "time_end"   => "event_time_end"
+        "title"      => "title",
+        "time_start" => "time_start",
+        "time_end"   => "time_end"
     );
 
 }

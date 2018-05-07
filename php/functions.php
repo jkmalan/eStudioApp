@@ -102,6 +102,21 @@ if ($function_type === "searchEBC") {
     }
 }
 
+function searchEBR($camp, $bldg, $room) {
+    $events = DBHandler::searchEventsByRoom($camp, $bldg, $room);
+    return $events;
+}
+
+function searchEBT($time_start, $time_end) {
+    $events = DBHandler::searchEventsByTime($time_start, $time_end);
+    return $events;
+}
+
+function searchEBC($term_code, $crn_key) {
+    $events = DBHandler::searchEventsByCRN($term_code, $crn_key);
+    return $events;
+}
+
 function validate($string) {
     $string = trim($string);
     $string = stripslashes($string);

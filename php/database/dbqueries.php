@@ -20,11 +20,11 @@ class DBQueries {
 
         "CREATE_ROOMS" =>
             "CREATE TABLE IF NOT EXISTS rooms ("
-            . "camp_code CHAR(8) NOT NULL,"
+            . "camp_code CHAR(4) NOT NULL,"
             . "camp_name CHAR(32) NOT NULL,"
             . "bldg_code CHAR(8) NOT NULL,"
             . "bldg_name CHAR(32) NOT NULL,"
-            . "room_code CHAR(8) NOT NULL,"
+            . "room_code CHAR(16) NOT NULL,"
             . "room_name CHAR(32),"
             . "PRIMARY KEY (camp_code, bldg_code, room_code));",
 
@@ -57,9 +57,9 @@ class DBQueries {
             . "time_start DATETIME NOT NULL,"
             . "time_end DATETIME NOT NULL,"
             . "title CHAR(64) NOT NULL,"
-            . "camp_code CHAR(8) NOT NULL,"
+            . "camp_code CHAR(4) NOT NULL,"
             . "bldg_code CHAR(8) NOT NULL,"
-            . "room_code CHAR(8) NOT NULL,"
+            . "room_code CHAR(16) NOT NULL,"
             . "subj_code CHAR(8) NOT NULL,"
             . "crse_code CHAR(8) NOT NULL,"
             . "xid CHAR(9),"
