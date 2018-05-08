@@ -55,11 +55,41 @@ if (isset($_GET['submit'])) {
             </div>
             <hr />
             <div class="panel-body" id="results">
-                <div class="row">
+                <div class="row text-center">
                 <?php
 
+
+                echo "<span class='col-md-2 col-lg-2 hidden-xs hidden-sm'>Campus<hr></span>";
+                echo "<span class='col-md-2 col-lg-2 hidden-xs hidden-sm'>Building<hr></span>";
+                echo "<span class='col-md-2 col-lg-2 hidden-xs hidden-sm'>Room<hr></span>";
+                echo "<span class='col-md-2 col-lg-2 hidden-xs hidden-sm'>Date<hr></span>";
+                echo "<span class='col-md-2 col-lg-2 hidden-xs hidden-sm'>Start Time<hr></span>";
+                echo "<span class='col-md-2 col-lg-2 hidden-xs hidden-sm'>End Time<hr></span>";
+
+
+                echo "<span class='col-sm-2 hidden-xs hidden-md hidden-lg'>Camp<hr></span>";
+                echo "<span class='col-sm-2 hidden-xs hidden-md hidden-lg'>Bldg<hr></span>";
+                echo "<span class='col-xs-3 col-sm-2 hidden-md hidden-lg'>Room<hr></span>";
+                echo "<span class='col-xs-3 col-sm-2 hidden-md hidden-lg'>Date<hr></span>";
+                echo "<span class='col-xs-3 col-sm-2 hidden-md hidden-lg'>Start<hr></span>";
+                echo "<span class='col-xs-3 col-sm-2 hidden-md hidden-lg'>End<hr></span>";
                 foreach ($events as $event) {
-                    echo "<div class='col-xs-6 col-sm-4 col-lg-3 btn btn-secondary'>" . $event['bldg_name']  . " RM" . $event['room_code'] . "</div>";
+
+
+                    echo "<span class='col-lg-2 hidden-xs hidden-sm hidden-md text-nowrap'>" . $event['camp_name'] . "</span>";
+                    echo "<span class='col-lg-2 hidden-xs hidden-sm hidden-md text-nowrap'>" . $event['bldg_name'] . "</span>";
+                    echo "<span class='col-xs-3 col-lg-2 hidden-sm hidden-md text-nowrap'>" . $event['room_name'] . "</span>";
+                    echo "<span class='col-lg-2 hidden-xs hidden-sm hidden-md text-nowrap'>" . explode(' ',$event['time_start'])[0] . "</span>";
+                    echo "<span class='col-lg-2 hidden-xs hidden-sm hidden-md text-nowrap'>" . explode(' ',$event['time_start'])[1] . "</span>";
+                    echo "<span class='col-lg-2 hidden-xs hidden-sm hidden-md text-nowrap'>" . explode(' ',$event['time_end'])[1] . "</span>";
+
+
+                    echo "<span class='col-sm-2 col-md-2 hidden-xs hidden-lg text-nowrap'>" . $event['camp_code'] . "</span>";
+                    echo "<span class='col-sm-2 col-md-2 hidden-xs hidden-lg text-nowrap'>" . $event['bldg_code'] . "</span>";
+                    echo "<span class='col-sm-2 col-md-2 hidden-xs hidden-lg text-nowrap'>" . $event['room_code'] . "</span>";
+                    echo "<span class='col-xs-3 col-sm-2 col-md-2 hidden-lg text-nowrap'>" . explode(' ',$event['time_start'])[0] . "</span>";
+                    echo "<span class='col-xs-3 col-sm-2 col-md-2 hidden-lg text-nowrap'>" . explode(' ',$event['time_start'])[1] . "</span>";
+                    echo "<span class='col-xs-3 col-sm-2 col-md-2 hidden-lg text-nowrap'>" . explode(' ',$event['time_end'])[1] . "</span>";
                 }
 
                 ?>
