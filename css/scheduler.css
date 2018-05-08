@@ -5,6 +5,6 @@
  * All other rights reserved.
  */
 
-#results .row .btn {
-
+.text-nowrap {
+    overflow-x: hidden;
 }

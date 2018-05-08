@@ -19,7 +19,7 @@ if ($function_type === "camp") {
 }
 
 if ($function_type === "bldg") {
-    $campus = filter_input(INPUT_GET, 'campus');
+    $campus = filter_input(INPUT_GET, 'camp');
     $buildings = DBHandler::getBuildings($campus);
     echo "<option value='' selected disabled>Choose a building...</option>";
     foreach ($buildings as $bldg) {
@@ -28,7 +28,7 @@ if ($function_type === "bldg") {
 }
 
 if ($function_type === "room") {
-    $building = filter_input(INPUT_GET, 'building');
+    $building = filter_input(INPUT_GET, 'bldg');
     $rooms = DBHandler::getRooms($building);
     echo "<option value='' selected disabled>Choose a room...</option>";
     foreach ($rooms as $room) {
