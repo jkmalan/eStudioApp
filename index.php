@@ -10,6 +10,7 @@ require_once './php/initialize.php';
 
 $page_style = "index.css";
 $page_title = "Home";
+
 ?>
 <html>
 
@@ -19,7 +20,9 @@ $page_title = "Home";
 
 <?php include ROOT_DIR . 'php/template/navigation_template.php'; ?>
 
+    <main>
 
+    </main>
 
 <?php include ROOT_DIR . 'php/template/footer_template.php'; ?>
 

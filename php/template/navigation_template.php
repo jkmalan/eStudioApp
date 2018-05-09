@@ -22,6 +22,7 @@
                     <li><a href="#" class="active">Home</a></li>
                     <li><a href="#">About</a></li>
                     <li><a href="#">Gallery</a></li>
+                    <li><a href="scheduler.php">Scheduler</a></li>
                     <li><a href="#">FAQ</a></li>
                 </ul>
             </div>

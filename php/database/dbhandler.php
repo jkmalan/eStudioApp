@@ -35,7 +35,7 @@ class DBHandler {
     public static function populateDB($file) {
         if (($data = fopen($file, "r")) !== FALSE) {
             $header = fgetcsv($data, 0, ",");
-            while (($row =fgetcsv($data, 0, ",")) !== FALSE) {
+            while (($row = fgetcsv($data, 0, ",")) !== FALSE) {
                 self::insertEventByRow($header, $row);
             }
         }

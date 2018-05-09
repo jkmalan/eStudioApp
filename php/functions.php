@@ -123,3 +123,11 @@ function validate($string) {
     $string = htmlspecialchars($string);
     return $string;
 }
+
+function createProgress() {
+    echo "<div id='progress'></div>";
+}
+
+function updateProgress() {
+
+}

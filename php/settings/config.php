@@ -64,7 +64,7 @@ class Config {
         "term_code"  => "term_code",
         "term_name"  => "term_name",
         "crn_key"    => "crn_key",
-        "title"      => "title",
+        "title"      => "crse_name",
         "time_start" => "time_start",
         "time_end"   => "time_end"
     );
