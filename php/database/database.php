@@ -29,6 +29,7 @@ class Database {
         try {
             self::$PDO = new PDO($dsn, Config::$DB_USER, Config::$DB_PASS);
             self::$PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            self::$PDO->setAttribute(PDO::MYSQL_ATTR_LOCAL_INFILE, true);
         } catch (PDOException $ex) {
             exit("Database failed to connect: " . $ex->getMessage());
         }

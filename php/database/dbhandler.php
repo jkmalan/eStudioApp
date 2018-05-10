@@ -38,6 +38,7 @@ class DBHandler {
             while (($row = fgetcsv($data, 0, ",")) !== FALSE) {
                 self::insertEventByRow($header, $row);
             }
+            fclose($data);
         }
     }
 

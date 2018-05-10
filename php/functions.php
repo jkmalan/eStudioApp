@@ -102,6 +102,13 @@ if ($function_type === "searchEBC") {
     }
 }
 
+if ($function_type === "detailRoom") {
+    $camp = filter_input(INPUT_GET, 'camp');
+    $bldg = filter_input(INPUT_GET, 'bldg');
+    $room = filter_input(INPUT_GET, 'room');
+    $details = DBHandler::getDetailsByRoom($camp);
+}
+
 function searchEBR($camp, $bldg, $room) {
     $events = DBHandler::searchEventsByRoom($camp, $bldg, $room);
     return $events;
@@ -122,12 +129,4 @@ function validate($string) {
     $string = stripslashes($string);
     $string = htmlspecialchars($string);
     return $string;
-}
-
-function createProgress() {
-    echo "<div id='progress'></div>";
-}
-
-function updateProgress() {
-
 }

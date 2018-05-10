@@ -13,11 +13,25 @@ $page_title = "Scheduler: Room";
 
 $camp_code = $bldg_code = $room_code = "";
 $events = array();
+$events_array = array();
 if (isset($_GET['submit'])) {
     $camp_code = filter_input(INPUT_GET, 'camp');
     $bldg_code = filter_input(INPUT_GET, 'bldg');
     $room_code = filter_input(INPUT_GET, 'room');
     $events = searchEBR($camp_code, $bldg_code, $room_code);
+
+    $event_id = 1;
+    foreach ($events as $event) {
+        $events_array[] = array(
+            'id' => $event_id,
+            'title' => $event['crn_key'] . " - " . $event['time_start'],
+            'url' => "https://estudio.jkmalan.com/functions.php?ftype=detailRoom&camp=" . $camp_code . "&bldg=" . $bldg_code . "&room=" . $room_code,
+            'class' => "event-info",
+            'start' => strtotime($event['time_start']) * 1000,
+            'end' => strtotime($event['time_end']) * 1000
+        );
+        $event_id++;
+    }
 }
 
 ?>
@@ -82,6 +96,9 @@ if (isset($_GET['submit'])) {
                 <div class="row">
                     <div id="calendar"></div>
                 </div>
+                <div class="row">
+                    <div id="events-list"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -107,30 +124,60 @@ if (isset($_GET['submit'])) {
 <?php include ROOT_DIR . 'php/template/footer_template.php'; ?>
 
 <script type="text/javascript">
+    'use strict';
+
     let campInput = $("select[name=camp]");
     let bldgInput = $("select[name=bldg]");
     let roomInput = $("select[name=room]");
 
+    console.log(<?php echo json_encode($events_array); ?>);
+
     $(function() {
         campInput.load("php/functions.php?ftype=camp");
+
+        let calendar = $("#calendar").calendar({
+            tmpl_path: "/tmpls/",
+            tmpl_cache: false,
+            view: 'week',
+            modal: '#events-modal',
+            modal_type: 'iframe',
+            modal_title: function(e) {
+                return e.title;
+            },
+            events_source: function() {
+                return <?php echo json_encode($events_array); ?>;
+            },
+            onAfterEventsLoad: function(events) {
+                if(!events) {
+                    return;
+                }
+                var list = $('#eventlist');
+                list.html('');
+
+                $.each(events, function(key, val) {
+                    $(document.createElement('li'))
+                        .html('<a href="' + val.url + '">' + val.title + '</a>')
+                        .appendTo(list);
+                });
+            }
+        });
+
+        campInput.on('change', function () {
+            bldgInput.load("php/functions.php?ftype=bldg&camp=" + campInput.val());
+            roomInput.load("php/functions.php?ftype=room&bldg=" + bldgInput.val());
+        }).trigger("change");
+
+        bldgInput.on('change', function () {
+            roomInput.load("php/functions.php?ftype=room&bldg=" + bldgInput.val());
+        }).trigger("change");
+
+        $('button[data-calendar-nav]').each(function() {
+            let $this = $(this);
+            $this.click(function() {
+                calendar.navigate($this.data('calendar-nav'));
+            });
+        });
     });
-
-    let calendar = $("#calendar").calendar({
-        tmpl_path: "/tmpls/",
-        events_source: function() {return []},
-        view: 'week',
-        modal: "#events-modal",
-        modal_type: 'iframe'
-    });
-
-    campInput.on('change', function () {
-        bldgInput.load("php/functions.php?ftype=bldg&camp=" + campInput.val());
-        roomInput.load("php/functions.php?ftype=room&bldg=" + bldgInput.val());
-    }).trigger("change");
-
-    bldgInput.on('change', function () {
-        roomInput.load("php/functions.php?ftype=room&bldg=" + bldgInput.val());
-    }).trigger("change");
 </script>
 
 </body>
