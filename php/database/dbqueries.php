@@ -115,42 +115,48 @@ class DBQueries {
      */
     public static $SELECT_CAMPUSES =
         "SELECT DISTINCT camp_code, camp_name FROM rooms "
-        . "WHERE true;";
+        . "WHERE true "
+        . "ORDER BY camp_code ASC;";
 
     /**
      * @var string A query to select a list of available buildings for a campus
      */
     public static $SELECT_BUILDINGS =
         "SELECT DISTINCT bldg_code, bldg_name FROM rooms "
-        . "WHERE camp_code = ?;";
+        . "WHERE camp_code = ? "
+        . "ORDER BY bldg_code ASC;";
 
     /**
      * @var string A query to select a list of available rooms for a building
      */
     public static $SELECT_ROOMS =
         "SELECT DISTINCT room_code, room_name FROM rooms "
-        . "WHERE bldg_code = ?;";
+        . "WHERE bldg_code = ? "
+        . "ORDER BY room_code ASC;";
 
     /**
      * @var string A query to select a list of available subjects
      */
     public static $SELECT_SUBJECTS =
         "SELECT DISTINCT subj_code, subj_name FROM courses "
-        . "WHERE true;";
+        . "WHERE true "
+        . "ORDER BY subj_code ASC;";
 
     /**
      * @var string A query to select a list of available courses for a subject
      */
     public static $SELECT_COURSES =
         "SELECT DISTINCT crse_code, crse_name FROM courses "
-	    . "WHERE subj_code = ?;";
+	    . "WHERE subj_code = ? "
+        . "ORDER BY crse_code ASC;";
 
     /**
      * @var string A query to select a list of available instructors
      */
     public static $SELECT_INSTRUCTORS =
-        "SELECT DISTINCT xid, fname, lname FROM instructors "
-        . "WHERE true;";
+        "SELECT DISTINCT xid, fname, mname, lname FROM instructors "
+        . "WHERE true "
+        . "ORDER BY lname ASC;";
 
     /**
      * @var string A query to select a list of available terms

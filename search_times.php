@@ -58,7 +58,7 @@ if (isset($_GET['submit'])) {
                 <div class="row text-center">
                 <?php
 
-
+                /* Desktop headers */
                 echo "<span class='col-md-2 col-lg-2 hidden-xs hidden-sm'>Campus<hr></span>";
                 echo "<span class='col-md-2 col-lg-2 hidden-xs hidden-sm'>Building<hr></span>";
                 echo "<span class='col-md-2 col-lg-2 hidden-xs hidden-sm'>Room<hr></span>";
@@ -66,7 +66,7 @@ if (isset($_GET['submit'])) {
                 echo "<span class='col-md-2 col-lg-2 hidden-xs hidden-sm'>Start Time<hr></span>";
                 echo "<span class='col-md-2 col-lg-2 hidden-xs hidden-sm'>End Time<hr></span>";
 
-
+                /* Mobile headers */
                 echo "<span class='col-sm-2 hidden-xs hidden-md hidden-lg'>Camp<hr></span>";
                 echo "<span class='col-sm-2 hidden-xs hidden-md hidden-lg'>Bldg<hr></span>";
                 echo "<span class='col-xs-3 col-sm-2 hidden-md hidden-lg'>Room<hr></span>";
@@ -75,7 +75,7 @@ if (isset($_GET['submit'])) {
                 echo "<span class='col-xs-3 col-sm-2 hidden-md hidden-lg'>End<hr></span>";
                 foreach ($events as $event) {
 
-
+                    /* Desktop display */
                     echo "<span class='col-lg-2 hidden-xs hidden-sm hidden-md text-nowrap'>" . $event['camp_name'] . "</span>";
                     echo "<span class='col-lg-2 hidden-xs hidden-sm hidden-md text-nowrap'>" . $event['bldg_name'] . "</span>";
                     echo "<span class='col-xs-3 col-lg-2 hidden-sm hidden-md text-nowrap'>" . $event['room_name'] . "</span>";
@@ -83,7 +83,7 @@ if (isset($_GET['submit'])) {
                     echo "<span class='col-lg-2 hidden-xs hidden-sm hidden-md text-nowrap'>" . explode(' ',$event['time_start'])[1] . "</span>";
                     echo "<span class='col-lg-2 hidden-xs hidden-sm hidden-md text-nowrap'>" . explode(' ',$event['time_end'])[1] . "</span>";
 
-
+                    /* Mobile display */
                     echo "<span class='col-sm-2 col-md-2 hidden-xs hidden-lg text-nowrap'>" . $event['camp_code'] . "</span>";
                     echo "<span class='col-sm-2 col-md-2 hidden-xs hidden-lg text-nowrap'>" . $event['bldg_code'] . "</span>";
                     echo "<span class='col-sm-2 col-md-2 hidden-xs hidden-lg text-nowrap'>" . $event['room_code'] . "</span>";

@@ -11,6 +11,9 @@ require_once './php/initialize.php';
 $page_style = "scheduler.css";
 $page_title = "Scheduler";
 
+/*
+ * Handles self submit form data and redirects to appropriate search page
+ */
 $time_start = $time_end = "";
 $camp_code = $bldg_code = $room_code = "";
 if (isset($_GET['submit'])) {
@@ -26,8 +29,12 @@ if (isset($_GET['submit'])) {
         $time_end = filter_input(INPUT_GET, 'time-end');
         header('Location: ' . BASE_URL . 'search_times.php?time-start=' . $time_start . '&time-end=' . $time_end . '&submit=Submit');
         exit();
+    } else if ($search === "terms") {
+        $term_code = filter_input(INPUT_GET, 'term');
+        $crn_key = filter_input(INPUT_GET, 'crn');
+        header('Location: ' . BASE_URL . 'search_courses.php?term=' . $term_code . '&crn=' . $crn_key . '&submit=Submit');
+        exit();
     }
-    $events = searchEBR($camp_code, $bldg_code, $room_code);
 }
 
 ?>
@@ -49,7 +56,7 @@ if (isset($_GET['submit'])) {
                     <li class="col-xs-4" id="search-times-tab">
                         <a class="" href="JavaScript:void(0);">Times</a>
                     </li>
-                    <li class="col-xs-4" id="search-courses-tab">
+                    <li class="col-xs-4" id="search-crn-tab">
                         <a class="" href="JavaScript:void(0);">Courses</a>
                     </li>
                 </ul>
@@ -97,21 +104,19 @@ if (isset($_GET['submit'])) {
                             </div>
                         </div>
                     </div>
-                    <div class="row" id="search-courses">
+                    <div class="row" id="search-crn">
                         <div class="form-group col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
-                            <label for="subj-input">Select Subject</label>
+                            <label for="term">Select Term</label>
                             <div>
-                                <select class="form-control" name="subj-input">
+                                <select class="form-control" name="term">
 
                                 </select>
                             </div>
                         </div>
                         <div class="form-group col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
-                            <label for="crse-input">Select Course</label>
+                            <label for="crn">Enter CRN</label>
                             <div>
-                                <select class="form-control" name="crse-input">
-
-                                </select>
+                                <input type="text" class="form-control" name="crn">
                             </div>
                         </div>
                     </div>
@@ -126,18 +131,19 @@ if (isset($_GET['submit'])) {
 
     <script type="text/javascript">
         $(function() {
+            /* Handles switching between search tabs and search page redirect */
             $('#search-times').hide();
-            $('#search-courses').hide();
+            $('#search-crn').hide();
 
             $('#search-rooms-tab').on('click', function(e) {
                 e.preventDefault();
 
                 $('#search-rooms-tab').addClass('active');
                 $('#search-times-tab').removeClass('active');
-                $('#search-courses-tab').removeClass('active');
+                $('#search-crn-tab').removeClass('active');
                 $('#search-rooms').show();
                 $('#search-times').hide();
-                $('#search-courses').hide();
+                $('#search-crn').hide();
                 $('input[name=search]').val("rooms");
             });
 
@@ -146,35 +152,33 @@ if (isset($_GET['submit'])) {
 
                 $('#search-times-tab').addClass('active');
                 $('#search-rooms-tab').removeClass('active');
-                $('#search-courses-tab').removeClass('active');
+                $('#search-crn-tab').removeClass('active');
                 $('#search-times').show();
                 $('#search-rooms').hide();
-                $('#search-courses').hide();
+                $('#search-crn').hide();
                 $('input[name=search]').val("times");
             });
 
-            $('#search-courses-tab').on('click', function(e) {
+            $('#search-crn-tab').on('click', function(e) {
                 e.preventDefault();
 
-                $('#search-courses-tab').addClass('active');
+                $('#search-crn-tab').addClass('active');
                 $('#search-times-tab').removeClass('active');
                 $('#search-rooms-tab').removeClass('active');
-                $('#search-courses').show();
+                $('#search-crn').show();
                 $('#search-times').hide();
                 $('#search-rooms').hide();
-                $('input[name=search]').val("courses");
+                $('input[name=search]').val("terms");
             });
 
+            /* Handles select tag option loading through AJAX calls to functions.php */
             let campInput = $("select[name=camp]");
             let bldgInput = $("select[name=bldg]");
             let roomInput = $("select[name=room]");
-            let subjInput = $("select[name=subj]");
-            let crseInput = $("select[name=crse]");
+            let termInput = $("select[name=term]");
 
-            $(function() {
-                campInput.load("php/functions.php?ftype=camp");
-                subjInput.load("php/functions.php?ftype=subj");
-            });
+            campInput.load("php/functions.php?ftype=camp");
+            termInput.load("php/functions.php?ftype=term");
 
             campInput.on('change', function () {
                 bldgInput.load("php/functions.php?ftype=bldg&camp=" + campInput.val());
@@ -183,10 +187,6 @@ if (isset($_GET['submit'])) {
 
             bldgInput.on('change', function () {
                 roomInput.load("php/functions.php?ftype=room&bldg=" + bldgInput.val());
-            }).trigger("change");
-
-            subjInput.on('change', function () {
-                crseInput.load("php/functions.php?ftype=crse&subj=" + subjInput.val());
             }).trigger("change");
         });
     </script>

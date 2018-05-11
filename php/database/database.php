@@ -28,8 +28,8 @@ class Database {
                . ";charset=" . Config::$DB_CHAR;
         try {
             self::$PDO = new PDO($dsn, Config::$DB_USER, Config::$DB_PASS);
-            self::$PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            self::$PDO->setAttribute(PDO::MYSQL_ATTR_LOCAL_INFILE, true);
+            self::$PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // Display SQL exceptions to the web page
+            self::$PDO->setAttribute(PDO::MYSQL_ATTR_LOCAL_INFILE, true); // Allows use of MySQL 'LOAD DATA LOCAL INFILE' for mass data import
         } catch (PDOException $ex) {
             exit("Database failed to connect: " . $ex->getMessage());
         }

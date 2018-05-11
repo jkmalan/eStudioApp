@@ -11,6 +11,9 @@ require_once './php/initialize.php';
 $page_style = "scheduler.css";
 $page_title = "Scheduler: Room";
 
+/*
+ * Searches for relevant events and converts to appropriate format
+ */
 $camp_code = $bldg_code = $room_code = "";
 $events = array();
 $events_array = array();
@@ -24,11 +27,11 @@ if (isset($_GET['submit'])) {
     foreach ($events as $event) {
         $events_array[] = array(
             'id' => $event_id,
-            'title' => $event['crn_key'] . " - " . explode(' ', $event['time_start'])[1],
-            'url' => "https://estudio.jkmalan.com/functions.php?ftype=detailRoom&camp=" . $camp_code . "&bldg=" . $bldg_code . "&room=" . $room_code,
+            'title' => $event['crn_key'] . " - " . explode(' ', $event['time_start'])[1], // Change to whatever the title of the event should be
+            'url' => "", // Can be an AJAX call or some other URL type to fill the body
             'class' => "event-info",
             'start' => (strtotime($event['time_start']) + 14400) * 1000, // Add 14400 (4 hours) due to odd issue with times showing up early
-            'end' => (strtotime($event['time_end']) + 14400) * 1000
+            'end' => (strtotime($event['time_end']) + 14400) * 1000 // Probably should be reverted once its figured out why timezones/UTC is funky
         );
         $event_id++;
     }
@@ -85,21 +88,16 @@ if (isset($_GET['submit'])) {
                 <div class="row">
                     <div class="col-xs-4 text-center">
                         <button class="btn btn-primary" data-calendar-nav="prev">&laquo;</button>
-                        <button class="btn btn-warning" data-calendar-view="week">Week View</button>
                     </div>
                     <div class="col-xs-4 text-center text-nowrap">
                         <h3 id="cal-title"></h3>
                     </div>
                     <div class="col-xs-4 text-center">
-                        <button class="btn btn-warning" data-calendar-view="day">Day View</button>
                         <button class="btn btn-primary" data-calendar-nav="next">&raquo;</button>
                     </div>
                 </div>
                 <div class="row">
                     <div id="calendar"></div>
-                </div>
-                <div class="row">
-                    <div id="events-list"></div>
                 </div>
             </div>
         </div>
@@ -126,24 +124,17 @@ if (isset($_GET['submit'])) {
 <?php include ROOT_DIR . 'php/template/footer_template.php'; ?>
 
 <script type="text/javascript">
-    'use strict';
-
-    let campInput = $("select[name=camp]");
-    let bldgInput = $("select[name=bldg]");
-    let roomInput = $("select[name=room]");
-
-    console.log(Intl.DateTimeFormat().resolvedOptions().timeZone);
-
     $(function() {
-        campInput.load("php/functions.php?ftype=camp");
+        'use strict';
 
+        /* Creates the calendar and submits its preliminary options */
         let calendar = $("#calendar").calendar({
             tmpl_path: "/tmpls/",
             tmpl_cache: false,
             view: 'day',
-            time_start: '00:00',
-            time_end: '24:00',
-            time_split: 60,
+            time_start: '06:00',
+            time_end: '22:00',
+            time_split: 30,
             modal: '#events-modal',
             modal_type: 'iframe',
             modal_title: function(e) {
@@ -151,21 +142,23 @@ if (isset($_GET['submit'])) {
             },
             events_source: function() {
                 return <?php echo json_encode($events_array); ?>;
-            },
-            onAfterEventsLoad: function(events) {
-                if(!events) {
-                    return;
-                }
-                var list = $('#eventlist');
-                list.html('');
-
-                $.each(events, function(key, val) {
-                    $(document.createElement('li'))
-                        .html('<a href="' + val.url + '">' + val.title + '</a>')
-                        .appendTo(list);
-                });
             }
         });
+
+        /* Controls the previous and next buttons */
+        $('button[data-calendar-nav]').each(function() {
+            let $this = $(this);
+            $this.click(function() {
+                calendar.navigate($this.data('calendar-nav'));
+            });
+        });
+
+        /* Handles select tag option loading through AJAX calls to functions.php */
+        let campInput = $("select[name=camp]");
+        let bldgInput = $("select[name=bldg]");
+        let roomInput = $("select[name=room]");
+
+        campInput.load("php/functions.php?ftype=camp");
 
         campInput.on('change', function () {
             bldgInput.load("php/functions.php?ftype=bldg&camp=" + campInput.val());
@@ -175,20 +168,6 @@ if (isset($_GET['submit'])) {
         bldgInput.on('change', function () {
             roomInput.load("php/functions.php?ftype=room&bldg=" + bldgInput.val());
         }).trigger("change");
-
-        $('button[data-calendar-nav]').each(function() {
-            let $this = $(this);
-            $this.click(function() {
-                calendar.navigate($this.data('calendar-nav'));
-            });
-        });
-
-        $('button[data-calendar-view]').each(function() {
-            var $this = $(this);
-            $this.click(function() {
-                calendar.view($this.data('calendar-view'));
-            });
-        });
     });
 </script>
 

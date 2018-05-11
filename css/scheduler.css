@@ -6,5 +6,5 @@
  */
 
 .text-nowrap {
-    overflow-x: hidden;
+    overflow-x: hidden; /* Prevent overlap of text on the search_times.php results */
 }

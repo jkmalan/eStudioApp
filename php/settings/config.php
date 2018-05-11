@@ -45,6 +45,9 @@ class Config {
 
     /**
      * @var array A map of SQL field names to CSV field names
+     *
+     * DO NOT CHANGE VALUES ON THE LEFT!
+     * VALUES ON THE RIGHT ARE EXPECTED CSV HEADERS!
      */
     public static $DATA_MAP = array(
         "camp_code"  => "camp_code",

@@ -11,6 +11,21 @@ require_once './php/initialize.php';
 $page_style = "admin.css";
 $page_title = "Administration";
 
+/*
+ * On page submit, temporarily store uploaded file, and then send to populate database
+ */
+if (isset($_POST['submit'])) {
+    $uploadDir = ROOT_DIR . 'data/';
+    $uploadFile = $uploadDir . basename($_FILES['dataFile']['name']);
+
+    if (move_uploaded_file($_FILES['dataFile']['tmp_name'], $uploadFile)) {
+        DBHandler::populateDB($uploadFile);
+        $msg = "File successfully uploaded and validated!";
+    } else {
+        $msg = "File was unable to be uploaded or validated!";
+    }
+}
+
 ?>
 <html>
 
@@ -45,41 +60,13 @@ $page_title = "Administration";
                 </div>
             </div>
         </div>
-
-        <div id="loading"><img src="img/loading.gif"></div>
     </main>
 
 <?php include ROOT_DIR . 'php/template/footer_template.php'; ?>
 
 <script type="text/javascript">
-    $('#loading').hide();
+
 </script>
-
-<?php
-
-if (isset($_POST['submit'])) {
-    $uploadDir = ROOT_DIR . 'data/';
-    $uploadFile = $uploadDir . basename($_FILES['dataFile']['name']);
-
-    ?>
-    <script type="text/javascript">
-        $('#loading').show();
-    </script>
-    <?php
-    if (move_uploaded_file($_FILES['dataFile']['tmp_name'], $uploadFile)) {
-        DBHandler::populateDB($uploadFile);
-        $msg = "File successfully uploaded and validated!";
-    } else {
-        $msg = "File was unable to be uploaded or validated!";
-    }
-    ?>
-    <script type="text/javascript">
-        $('#loading').hide();
-    </script>
-    <?php
-}
-
-?>
 
 </body>
 

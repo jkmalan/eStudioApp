@@ -21,7 +21,9 @@ $page_title = "Home";
 <?php include ROOT_DIR . 'php/template/navigation_template.php'; ?>
 
     <main>
-
+        <div class="container">
+            <h1 class="text-center">Welcome to the Landing Page for eStudio!</h1>
+        </div>
     </main>
 
 <?php include ROOT_DIR . 'php/template/footer_template.php'; ?>
