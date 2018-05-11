@@ -24,11 +24,11 @@ if (isset($_GET['submit'])) {
     foreach ($events as $event) {
         $events_array[] = array(
             'id' => $event_id,
-            'title' => $event['crn_key'] . " - " . $event['time_start'],
+            'title' => $event['crn_key'] . " - " . explode(' ', $event['time_start'])[1],
             'url' => "https://estudio.jkmalan.com/functions.php?ftype=detailRoom&camp=" . $camp_code . "&bldg=" . $bldg_code . "&room=" . $room_code,
             'class' => "event-info",
-            'start' => strtotime($event['time_start']) * 1000,
-            'end' => strtotime($event['time_end']) * 1000
+            'start' => (strtotime($event['time_start']) + 14400) * 1000, // Add 14400 (4 hours) due to odd issue with times showing up early
+            'end' => (strtotime($event['time_end']) + 14400) * 1000
         );
         $event_id++;
     }
@@ -85,11 +85,13 @@ if (isset($_GET['submit'])) {
                 <div class="row">
                     <div class="col-xs-4 text-center">
                         <button class="btn btn-primary" data-calendar-nav="prev">&laquo;</button>
+                        <button class="btn btn-warning" data-calendar-view="week">Week View</button>
                     </div>
                     <div class="col-xs-4 text-center text-nowrap">
-                        <h3></h3>
+                        <h3 id="cal-title"></h3>
                     </div>
                     <div class="col-xs-4 text-center">
+                        <button class="btn btn-warning" data-calendar-view="day">Day View</button>
                         <button class="btn btn-primary" data-calendar-nav="next">&raquo;</button>
                     </div>
                 </div>
@@ -130,7 +132,7 @@ if (isset($_GET['submit'])) {
     let bldgInput = $("select[name=bldg]");
     let roomInput = $("select[name=room]");
 
-    console.log(<?php echo json_encode($events_array); ?>);
+    console.log(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
     $(function() {
         campInput.load("php/functions.php?ftype=camp");
@@ -138,7 +140,10 @@ if (isset($_GET['submit'])) {
         let calendar = $("#calendar").calendar({
             tmpl_path: "/tmpls/",
             tmpl_cache: false,
-            view: 'week',
+            view: 'day',
+            time_start: '00:00',
+            time_end: '24:00',
+            time_split: 60,
             modal: '#events-modal',
             modal_type: 'iframe',
             modal_title: function(e) {
@@ -175,6 +180,13 @@ if (isset($_GET['submit'])) {
             let $this = $(this);
             $this.click(function() {
                 calendar.navigate($this.data('calendar-nav'));
+            });
+        });
+
+        $('button[data-calendar-view]').each(function() {
+            var $this = $(this);
+            $this.click(function() {
+                calendar.view($this.data('calendar-view'));
             });
         });
     });
